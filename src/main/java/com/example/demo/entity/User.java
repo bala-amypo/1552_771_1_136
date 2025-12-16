@@ -1,4 +1,4 @@
-package com.example.loan.entity;
+package com.example.demo.entity;
 
 import java.security.Timestamp;
 
