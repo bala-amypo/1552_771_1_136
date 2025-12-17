@@ -2,12 +2,25 @@ package com.example.demo.entity;
 
 import java.security.Timestamp;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+ @Entity
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
-    private long Id;
+    
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String fullName;
     private String email;
-    private String role;
-    private Timestamp createdAt;
+    private String password;
+    private String role = "CUSTOMER";
+
+ private Timestamp createdAt;
 
     public User(){
 
