@@ -20,7 +20,7 @@ public class AuthController {
     UserService userService;
 
     @PostMapping("/{register}")
-    public User createAll(@RequestBody User user){
+    public User register(@RequestBody User user){
         return userService.createUser(user);
     }
 
