@@ -10,29 +10,31 @@ public class AuthController {
 
     private final UserService userService;
 
-    // ✅ constructor injection
     public AuthController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.registerUser(user);
+    public String register(@RequestBody User user) {
+
+        User saved = userService.register(user);
+
+        if (saved == null) {
+            return "Email already exists";
+        }
+
+        return "User registered successfully";
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
+    public String login(@RequestBody User user) {
 
-        User user = userService.findByEmail(request.email);
+        User loggedIn = userService.login(user.getEmail(), user.getPassword());
 
-        if (!user.getPassword().equals(request.password)) {
-            throw new RuntimeException("Invalid credentials");
+        if (loggedIn == null) {
+            return "Invalid credentials";
         }
 
-        AuthResponse response = new AuthResponse();
-        response.token = "SIMPLE-TOKEN";
-        response.role = user.getRole();
-
-        return response;
+        return "Login successful for role: " + loggedIn.getRole();
     }
 }
