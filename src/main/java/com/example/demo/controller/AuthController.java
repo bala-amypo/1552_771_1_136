@@ -1,31 +1,40 @@
-package com.example.loan.controller;
+package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.loan.entity.User;
-import com.example.loan.service.UserService;
-
-import io.swagger.v3.oas.annotation
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.entity.User;
+import com.example.demo.service.UserService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name="Loan Eligibility", description="Loan eligibility check")
 public class AuthController {
-    
-    @Autowired
-    UserService userService;
 
-    @PostMapping("/{register}")
-    public User register(@RequestBody User user){
-        return userService.createUser(user);
+    private final UserService userService;
+
+    // ✅ constructor injection
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
-   @PostMapping("/login")
-    public User login(@RequestBody User user) {
-        return userService.findByEmail(user.getEmail());
+    @PostMapping("/register")
+    public User register(@RequestBody User user) {
+        return userService.registerUser(user);
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody AuthRequest request) {
+
+        User user = userService.findByEmail(request.email);
+
+        if (!user.getPassword().equals(request.password)) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        AuthResponse response = new AuthResponse();
+        response.token = "SIMPLE-TOKEN";
+        response.role = user.getRole();
+
+        return response;
     }
 }
