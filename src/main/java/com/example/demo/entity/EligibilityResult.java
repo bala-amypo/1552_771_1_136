@@ -1,14 +1,25 @@
 package com.example.loan.entity;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
-public class Eligibility {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class EligibilityResult {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean eligible;
-    private String riskLevel;
 
     @OneToOne
-    private Loan loan;
+    private LoanRequest loanRequest;
+
+    private Boolean isEligible;
+    private Double maxEligibleAmount;
+    private Double estimatedEmi;
+    private String riskLevel;
+    private String rejectionReason;
+
+    private Timestamp calculatedAt = new Timestamp(System.currentTimeMillis());
+
+    // getters and setters
 }

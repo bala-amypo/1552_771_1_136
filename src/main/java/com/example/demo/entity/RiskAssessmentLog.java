@@ -4,9 +4,17 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-public class RiskLog {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class RiskAssessmentLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Long loanRequestId;
     private Double dtiRatio;
-    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+    private String creditCheckStatus;
+
+    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+    // getters and setters
 }
