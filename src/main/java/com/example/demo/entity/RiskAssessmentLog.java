@@ -1,33 +1,34 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "risk_assessment_logs")
 public class RiskAssessmentLog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long loanRequestId;
     private Double dtiRatio;
     private String creditCheckStatus;
-    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    private Instant timestamp = Instant.now();
 
-    // Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "loan_request_id")
+    private LoanRequest loanRequest;
+
+    public RiskAssessmentLog() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public Long getLoanRequestId() { return loanRequestId; }
-    public void setLoanRequestId(Long loanRequestId) { this.loanRequestId = loanRequestId; }
-
     public Double getDtiRatio() { return dtiRatio; }
     public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
-
     public String getCreditCheckStatus() { return creditCheckStatus; }
     public void setCreditCheckStatus(String creditCheckStatus) { this.creditCheckStatus = creditCheckStatus; }
-
-    public Timestamp getTimestamp() { return timestamp; }
-    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
+    public Instant getTimestamp() { return timestamp; }
+    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+    public LoanRequest getLoanRequest() { return loanRequest; }
+    public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
 }
