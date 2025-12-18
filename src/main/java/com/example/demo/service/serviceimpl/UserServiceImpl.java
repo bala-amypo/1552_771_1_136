@@ -6,16 +6,20 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Optional;
+
+@Service  // ✅ important!
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    // ✅ Constructor injection
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder(); // Manual instance
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
@@ -23,8 +27,8 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new BadRequestException("Email already in use");
         }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         return userRepository.save(user);
     }
 
@@ -35,8 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }
