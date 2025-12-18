@@ -2,26 +2,32 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
+import com.example.demo.repository.EligibilityResultRepository;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.repository.RiskAssessmentLogRepository;
 import com.example.demo.service.LoanEligibilityService;
-import org.springframework.stereotype.Service;
 
-@Service
+import java.sql.Timestamp;
+
 public class LoanEligibilityServiceImpl implements LoanEligibilityService {
 
     private final LoanRequestRepository loanRequestRepository;
-    private final FinancialProfileRepository financialProfileRepository;
-    private final EligibilityResultRepository eligibilityResultRepository;
-    private final RiskAssessmentLogRepository riskLogRepository;
+    private final FinancialProfileRepository profileRepository;
+    private final EligibilityResultRepository resultRepository;
+    private final RiskAssessmentLogRepository logRepository;
 
-    public LoanEligibilityServiceImpl(LoanRequestRepository loanRequestRepository,
-                                      FinancialProfileRepository financialProfileRepository,
-                                      EligibilityResultRepository eligibilityResultRepository,
-                                      RiskAssessmentLogRepository riskLogRepository) {
+    // ✅ Constructor injection
+    public LoanEligibilityServiceImpl(
+            LoanRequestRepository loanRequestRepository,
+            FinancialProfileRepository profileRepository,
+            EligibilityResultRepository resultRepository,
+            RiskAssessmentLogRepository logRepository
+    ) {
         this.loanRequestRepository = loanRequestRepository;
-        this.financialProfileRepository = financialProfileRepository;
-        this.eligibilityResultRepository = eligibilityResultRepository;
-        this.riskLogRepository = riskLogRepository;
+        this.profileRepository = profileRepository;
+        this.resultRepository = resultRepository;
+        this.logRepository = logRepository;
     }
 
     @Override
@@ -29,47 +35,56 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
         LoanRequest request = loanRequestRepository.findById(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
 
-        FinancialProfile profile = financialProfileRepository.findByUserId(request.getUser().getId())
+        FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
 
-        double dti = profile.getExistingLoanEmi()/profile.getMonthlyIncome();
-        boolean eligible;
-        String risk;
-        String reason=null;
+        // Calculate DTI (Debt-to-Income)
+        double dti = profile.getExistingLoanEmi() / profile.getMonthlyIncome();
 
-        if(profile.getCreditScore()<400 || dti>0.5){
-            eligible=false; risk="HIGH"; reason="Credit score too low or DTI too high";
-        } else if(profile.getCreditScore()<600 || dti>0.35){
-            eligible=true; risk="MEDIUM";
-        } else {
-            eligible=true; risk="LOW";
-        }
+        // Check credit score
+        boolean creditEligible = profile.getCreditScore() >= 600;
 
-        double maxAmount=eligible ? profile.getMonthlyIncome()*0.5*request.getTenureMonths() : 0;
-        double estimatedEmi=eligible ? maxAmount/request.getTenureMonths() : 0;
+        boolean eligible = creditEligible && dti < 0.4 && request.getRequestedAmount() <= profile.getSavingsBalance() * 5;
 
-        EligibilityResult result=new EligibilityResult();
+        // Determine max eligible amount
+        double maxEligibleAmount = eligible ? request.getRequestedAmount() : profile.getSavingsBalance() * 5;
+
+        // Estimate EMI (simple fixed interest example)
+        double estimatedEmi = maxEligibleAmount / request.getTenureMonths();
+
+        // Determine risk level
+        String riskLevel;
+        if (dti < 0.2 && profile.getCreditScore() > 750) riskLevel = "LOW";
+        else if (dti < 0.35) riskLevel = "MEDIUM";
+        else riskLevel = "HIGH";
+
+        // Save EligibilityResult
+        EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(request);
         result.setIsEligible(eligible);
-        result.setMaxEligibleAmount(maxAmount);
+        result.setMaxEligibleAmount(maxEligibleAmount);
         result.setEstimatedEmi(estimatedEmi);
-        result.setRiskLevel(risk);
-        result.setRejectionReason(reason);
+        result.setRiskLevel(riskLevel);
+        result.setRejectionReason(eligible ? null : "Credit or DTI criteria not met");
+        result.setCalculatedAt(new Timestamp(System.currentTimeMillis())); // ✅ Timestamp
 
-        eligibilityResultRepository.save(result);
+        resultRepository.save(result);
 
-        RiskAssessmentLog log=new RiskAssessmentLog();
+        // Save RiskAssessmentLog
+        RiskAssessmentLog log = new RiskAssessmentLog();
         log.setLoanRequestId(request.getId());
         log.setDtiRatio(dti);
-        log.setCreditCheckStatus(eligible ? "PASS" : "FAIL");
-        riskLogRepository.save(log);
+        log.setCreditCheckStatus(creditEligible ? "PASS" : "FAIL");
+        log.setTimestamp(new Timestamp(System.currentTimeMillis())); // ✅ Timestamp
+
+        logRepository.save(log);
 
         return result;
     }
 
     @Override
     public EligibilityResult getResultByRequest(Long loanRequestId) {
-        return eligibilityResultRepository.findByLoanRequestId(loanRequestId)
+        return resultRepository.findByLoanRequestId(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Eligibility result not found"));
     }
 }

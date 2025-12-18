@@ -17,6 +17,7 @@ public class AuthController {
     private final UserServiceImpl userService;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    // ✅ Constructor injection
     public AuthController(UserServiceImpl userService) {
         this.userService = userService;
         this.passwordEncoder = new BCryptPasswordEncoder(); // Manual instance
@@ -39,7 +40,6 @@ public class AuthController {
             throw new BadRequestException("Invalid credentials");
         }
 
-        // For now, return a simple message (JWT logic can be added later)
         Map<String, String> response = new HashMap<>();
         response.put("message", "Login successful");
         response.put("email", existingUser.getEmail());
