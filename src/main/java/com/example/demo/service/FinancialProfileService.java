@@ -1,6 +1,6 @@
-package com.example.loan.service;
+package com.example.demo.service;
 
-import com.example.loan.entity.FinancialProfile;
+import com.example.demo.entity.FinancialProfile;
 
 public interface FinancialProfileService {
     FinancialProfile createOrUpdateProfile(FinancialProfile profile);

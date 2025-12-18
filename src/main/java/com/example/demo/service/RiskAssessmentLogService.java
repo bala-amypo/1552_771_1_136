@@ -1,6 +1,6 @@
-package com.example.loan.service;
+package com.example.demo.service;
 
-import com.example.loan.entity.RiskAssessmentLog;
+import com.example.demo.entity.RiskAssessmentLog;
 import java.util.List;
 
 public interface RiskAssessmentLogService {

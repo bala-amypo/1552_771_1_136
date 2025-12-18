@@ -1,6 +1,6 @@
-package com.example.loan.service;
+package com.example.demo.service;
 
-import com.example.loan.entity.EligibilityResult;
+import com.example.demo.entity.EligibilityResult;
 
 public interface LoanEligibilityService {
     EligibilityResult evaluateEligibility(Long loanRequestId);

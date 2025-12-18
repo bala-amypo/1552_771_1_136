@@ -1,6 +1,6 @@
-package com.example.loan.service;
+package com.example.demo.service;
 
-import com.example.loan.entity.LoanRequest;
+import com.example.demo.entity.LoanRequest;
 import java.util.List;
 
 public interface LoanRequestService {

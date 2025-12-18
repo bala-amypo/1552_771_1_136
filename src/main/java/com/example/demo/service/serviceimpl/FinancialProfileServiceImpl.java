@@ -1,9 +1,9 @@
-package com.example.loan.service.impl;
+package com.example.demo.service.impl;
 
-import com.example.loan.entity.FinancialProfile;
-import com.example.loan.exception.*;
-import com.example.loan.repository.FinancialProfileRepository;
-import com.example.loan.service.FinancialProfileService;
+import com.example.demo.entity.FinancialProfile;
+import com.example.demo.exception.*;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.service.FinancialProfileService;
 import org.springframework.stereotype.Service;
 
 @Service

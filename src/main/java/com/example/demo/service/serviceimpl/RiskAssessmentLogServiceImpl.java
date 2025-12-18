@@ -1,8 +1,8 @@
-package com.example.loan.service.impl;
+package com.example.demo.service.impl;
 
-import com.example.loan.entity.RiskAssessmentLog;
-import com.example.loan.repository.RiskAssessmentLogRepository;
-import com.example.loan.service.RiskAssessmentLogService;
+import com.example.demo.entity.RiskAssessmentLog;
+import com.example.demo.repository.RiskAssessmentLogRepository;
+import com.example.demo.service.RiskAssessmentLogService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
