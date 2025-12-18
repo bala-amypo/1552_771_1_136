@@ -1,7 +1,7 @@
-package com.example.loan.controller;
+package com.example.demo.controller;
 
-import com.example.loan.entity.User;
-import com.example.loan.service.UserService;
+import com.example.demo.entity.User;
+import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

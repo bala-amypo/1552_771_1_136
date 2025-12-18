@@ -1,6 +1,6 @@
-package com.example.loan.repository;
+package com.example.demo.repository;
 
-import com.example.loan.entity.FinancialProfile;
+import com.example.demo.entity.FinancialProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

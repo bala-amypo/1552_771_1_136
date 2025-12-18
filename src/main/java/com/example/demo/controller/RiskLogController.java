@@ -1,7 +1,7 @@
-package com.example.loan.controller;
+package com.example.demo.controller;
 
-import com.example.loan.entity.RiskAssessmentLog;
-import com.example.loan.service.RiskAssessmentLogService;
+import com.example.demo.entity.RiskAssessmentLog;
+import com.example.demo.service.RiskAssessmentLogService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 

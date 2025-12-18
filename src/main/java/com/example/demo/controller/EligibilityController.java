@@ -1,7 +1,7 @@
-package com.example.loan.controller;
+package com.example.demo.controller;
 
-import com.example.loan.entity.EligibilityResult;
-import com.example.loan.service.LoanEligibilityService;
+import com.example.demo.entity.EligibilityResult;
+import com.example.demo.service.LoanEligibilityService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
