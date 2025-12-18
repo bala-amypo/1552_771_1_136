@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserService userService;  // ✅ inject interface
 
-    // ✅ inject interface, not implementation
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService) { // ✅ constructor injection
         this.userService = userService;
     }
 
@@ -22,5 +21,5 @@ public class AuthController {
         return ResponseEntity.ok(savedUser);
     }
 
-    // Add login endpoint if needed
+    // add login endpoint if needed
 }
