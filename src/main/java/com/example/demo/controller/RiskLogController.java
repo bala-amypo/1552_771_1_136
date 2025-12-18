@@ -10,16 +10,25 @@ import com.example.demo.service.RiskAssessmentLogService;
 @RequestMapping("/api/risk-logs")
 public class RiskLogController {
 
-    private final RiskAssessmentService riskAssessmentService;
+    private final RiskAssessmentLogService riskAssessmentLogService;
 
-    public RiskLogController(RiskAssessmentService riskAssessmentService) {
-        this.riskAssessmentService = riskAssessmentService;
+    public RiskLogController(RiskAssessmentLogService riskAssessmentLogService) {
+        this.riskAssessmentLogService = riskAssessmentLogService;
+    }
+
+    @PostMapping("/{loanRequestId}")
+    public ResponseEntity<RiskAssessmentLog> assessRisk(
+            @PathVariable Long loanRequestId) {
+
+        return ResponseEntity.ok(
+                riskAssessmentLogService.assessRisk(loanRequestId));
     }
 
     @GetMapping("/{loanRequestId}")
     public ResponseEntity<RiskAssessmentLog> getRiskLog(
             @PathVariable Long loanRequestId) {
+
         return ResponseEntity.ok(
-                riskAssessmentService.getByLoanRequestId(loanRequestId));
+                riskAssessmentLogService.getByLoanRequestId(loanRequestId));
     }
 }

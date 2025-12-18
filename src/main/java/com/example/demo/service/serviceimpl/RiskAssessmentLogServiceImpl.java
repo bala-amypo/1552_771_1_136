@@ -1,21 +1,31 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
-import com.example.demo.repository.*;
-import com.example.demo.service.RiskAssessmentLogService;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.LoanRequest;
+import com.example.demo.entity.RiskAssessmentLog;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.repository.RiskAssessmentLogRepository;
+import com.example.demo.service.RiskAssessmentLogService;
 
-public class RiskAssessmentLogServiceImpl implements RiskAssessmentService {
+@Service
+public class RiskAssessmentLogServiceImpl implements RiskAssessmentLogService {
 
-    private final LoanRequestRepository loanRepository;
+    private final LoanRequestRepository loanRequestRepository;
     private final FinancialProfileRepository profileRepository;
     private final RiskAssessmentLogRepository logRepository;
 
-    public RiskAssessmentServiceImpl(LoanRequestRepository loanRepository,
-                                     FinancialProfileRepository profileRepository,
-                                     RiskAssessmentLogRepository logRepository) {
-        this.loanRepository = loanRepository;
+    // ✅ Constructor name = class name
+    public RiskAssessmentLogServiceImpl(
+            LoanRequestRepository loanRequestRepository,
+            FinancialProfileRepository profileRepository,
+            RiskAssessmentLogRepository logRepository) {
+
+        this.loanRequestRepository = loanRequestRepository;
         this.profileRepository = profileRepository;
         this.logRepository = logRepository;
     }
@@ -23,28 +33,33 @@ public class RiskAssessmentLogServiceImpl implements RiskAssessmentService {
     @Override
     public RiskAssessmentLog assessRisk(Long loanRequestId) {
 
-        if (logRepository.findByLoanRequestId(loanRequestId).isPresent()) {
+        if (!logRepository.findByLoanRequestId(loanRequestId).isEmpty()) {
             throw new BadRequestException("Risk already assessed");
         }
 
-        LoanRequest loan = loanRepository.findById(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+        LoanRequest loan = loanRequestRepository.findById(loanRequestId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Loan request not found"));
 
-        FinancialProfile profile = profileRepository.findByUserId(loan.getUser().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
+        FinancialProfile profile = profileRepository
+                .findByUserId(loan.getUser().getId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Financial profile not found"));
 
-        double obligations = profile.getMonthlyExpenses() +
-                (profile.getExistingLoanEmi() == null ? 0 : profile.getExistingLoanEmi());
+        double existingEmi = profile.getExistingLoanEmi() == null
+                ? 0
+                : profile.getExistingLoanEmi();
 
-        double dti = obligations / profile.getMonthlyIncome();
+        double dti = (profile.getMonthlyExpenses() + existingEmi)
+                / profile.getMonthlyIncome();
 
         RiskAssessmentLog log = new RiskAssessmentLog();
         log.setLoanRequestId(loanRequestId);
         log.setDtiRatio(dti);
 
-        if (profile.getCreditScore() >= 700) {
+        if (profile.getCreditScore() >= 750) {
             log.setCreditCheckStatus("APPROVED");
-        } else if (profile.getCreditScore() >= 600) {
+        } else if (profile.getCreditScore() >= 650) {
             log.setCreditCheckStatus("PENDING_REVIEW");
         } else {
             log.setCreditCheckStatus("REJECTED");
@@ -56,6 +71,9 @@ public class RiskAssessmentLogServiceImpl implements RiskAssessmentService {
     @Override
     public RiskAssessmentLog getByLoanRequestId(Long loanRequestId) {
         return logRepository.findByLoanRequestId(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Risk assessment not found"));
+                .stream()
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Risk assessment not found"));
     }
 }
