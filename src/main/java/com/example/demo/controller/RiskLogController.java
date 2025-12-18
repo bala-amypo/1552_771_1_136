@@ -1,26 +1,25 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.RiskAssessmentLog;
-import com.example.demo.service.impl.RiskAssessmentLogServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.example.demo.entity.RiskAssessmentLog;
+import com.example.demo.service.RiskAssessmentService;
 
 @RestController
 @RequestMapping("/api/risk-logs")
 public class RiskLogController {
 
-    private final RiskAssessmentLogServiceImpl riskLogService;
+    private final RiskAssessmentService riskAssessmentService;
 
-    public RiskLogController(RiskAssessmentLogServiceImpl riskLogService) {
-        this.riskLogService = riskLogService;
+    public RiskLogController(RiskAssessmentService riskAssessmentService) {
+        this.riskAssessmentService = riskAssessmentService;
     }
 
-    // Get all risk logs for a loan request
     @GetMapping("/{loanRequestId}")
-    public ResponseEntity<List<RiskAssessmentLog>> getLogsByRequest(@PathVariable Long loanRequestId) {
-        List<RiskAssessmentLog> logs = riskLogService.getLogsByRequest(loanRequestId);
-        return ResponseEntity.ok(logs);
+    public ResponseEntity<RiskAssessmentLog> getRiskLog(
+            @PathVariable Long loanRequestId) {
+        return ResponseEntity.ok(
+                riskAssessmentService.getByLoanRequestId(loanRequestId));
     }
 }
