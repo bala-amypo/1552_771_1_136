@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.RiskAssessmentLog;
-import com.example.demo.service.RiskAssessmentService;
+import com.example.demo.service.RiskAssessmentLogService;
 
 @RestController
 @RequestMapping("/api/risk-logs")
