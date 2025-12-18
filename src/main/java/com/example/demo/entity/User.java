@@ -1,39 +1,54 @@
 package com.example.demo.entity;
 
+
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
+
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
 
-    private String fullName;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+@Column(nullable = false)
+private String fullName;
 
-    private String password;
 
-    private String role;
+@Column(nullable = false, unique = true)
+private String email;
 
-    private Instant createdAt = Instant.now();
 
-    public User() {}
+@Column(nullable = false)
+private String password;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+@Column(nullable = false)
+private String role = "CUSTOMER";
+
+
+private LocalDateTime createdAt;
+
+
+@PrePersist
+void onCreate() {
+this.createdAt = LocalDateTime.now();
+}
+
+
+public User() {}
+
+
+public User(String fullName, String email, String password, String role) {
+this.fullName = fullName;
+this.email = email;
+this.password = password;
+this.role = role;
+}
+
+
+// getters and setters
 }
