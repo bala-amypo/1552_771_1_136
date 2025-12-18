@@ -3,12 +3,10 @@ package com.example.demo.service.serviceimpl;
 import com.example.demo.entity.LoanRequest;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.service.LoanRequestService;
-
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-@Service  // ← critical: this makes it a Spring bean
+@Service
 public class LoanRequestServiceImpl implements LoanRequestService {
 
     private final LoanRequestRepository repository;
@@ -18,17 +16,23 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     }
 
     @Override
-    public LoanRequest createLoanRequest(LoanRequest request) {
+    public LoanRequest submitRequest(LoanRequest request) {
         return repository.save(request);
     }
 
     @Override
-    public List<LoanRequest> getAllLoanRequests() {
-        return repository.findAll();
+    public List<LoanRequest> getRequestsByUser(Long userId) {
+        return repository.findByUserId(userId); // make sure repository has this method
     }
 
     @Override
-    public LoanRequest getLoanRequestById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("LoanRequest not found"));
+    public LoanRequest getById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("LoanRequest not found"));
+    }
+
+    @Override
+    public List<LoanRequest> getAllRequests() {
+        return repository.findAll();
     }
 }
