@@ -1,40 +1,20 @@
-package com.example.demo.controller;
+package com.example.loan.controller;
 
-import com.example.demo.entity.User;
-import com.example.demo.service.UserService;
+import com.example.loan.entity.User;
+import com.example.loan.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/api/users")
+public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
+    public UserController(UserService service) { this.service = service; }
 
-    @PostMapping("/register")
-    public String register(@RequestBody User user) {
+    @PostMapping
+    public User register(@RequestBody User user) { return service.registerUser(user); }
 
-        User saved = userService.register(user);
-
-        if (saved == null) {
-            return "Email already exists";
-        }
-
-        return "User registered successfully";
-    }
-
-    @PostMapping("/login")
-    public String login(@RequestBody User user) {
-
-        User loggedIn = userService.login(user.getEmail(), user.getPassword());
-
-        if (loggedIn == null) {
-            return "Invalid credentials";
-        }
-
-        return "Login successful for role: " + loggedIn.getRole();
-    }
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) { return service.getUserById(id); }
 }

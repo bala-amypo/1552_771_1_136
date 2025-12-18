@@ -1,39 +1,29 @@
-package com.example.demo.serviceimpl;
+package com.example.loan.service.impl;
 
-import com.example.demo.entity.User;
-import com.example.demo.service.UserService;
+import com.example.loan.entity.User;
+import com.example.loan.exception.*;
+import com.example.loan.repository.UserRepository;
+import com.example.loan.service.UserService;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final Map<String, User> users = new HashMap<>();
-    private long idCounter = 1;
+    private final UserRepository repo;
 
-    @Override
-    public User register(User user) {
+    public UserServiceImpl(UserRepository repo) { this.repo = repo; }
 
-        if (users.containsKey(user.getEmail())) {
-            return null; // email already exists
-        }
-
-        user.setId(idCounter++);
-        users.put(user.getEmail(), user);
-        return user;
+    public User registerUser(User user) {
+        if(repo.existsByEmail(user.getEmail()))
+            throw new DuplicateRecordException("Email already exists");
+        return repo.save(user);
     }
 
-    @Override
-    public User login(String email, String password) {
+    public User getUserById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
 
-        User user = users.get(email);
-
-        if (user == null || !user.getPassword().equals(password)) {
-            return null;
-        }
-
-        return user;
+    public User findByEmail(String email) {
+        return repo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

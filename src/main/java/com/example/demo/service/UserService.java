@@ -1,10 +1,9 @@
-package com.example.demo.service;
+package com.example.loan.service;
 
-import com.example.demo.entity.User;
+import com.example.loan.entity.User;
 
 public interface UserService {
-
-    User register(User user);
-
-    User login(String email, String password);
+    User registerUser(User user);
+    User getUserById(Long id);
+    User findByEmail(String email);
 }
