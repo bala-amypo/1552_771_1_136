@@ -2,11 +2,11 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
-import com.example.demo.service.RiskAssessmentService;
+import com.example.demo.service.RiskAssessmentLogService;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 
-public class RiskAssessmentServiceImpl implements RiskAssessmentService {
+public class RiskAssessmentLogServiceImpl implements RiskAssessmentService {
 
     private final LoanRequestRepository loanRepository;
     private final FinancialProfileRepository profileRepository;
