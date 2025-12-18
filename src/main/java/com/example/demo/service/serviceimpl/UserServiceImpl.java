@@ -9,9 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Optional;
 
-@Service  // ✅ important!
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -39,7 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }
