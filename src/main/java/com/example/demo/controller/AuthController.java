@@ -1,34 +1,39 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
-import com.example.demo.service.UserService;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.service.impl.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/auth")
 public class AuthController {
+    private final UserServiceImpl userService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    private final UserService service;
-
-    // ✅ Constructor name must match the class
-    public AuthController(UserService service) {
-        this.service = service;
+    public AuthController(UserServiceImpl userService, BCryptPasswordEncoder passwordEncoder){
+        this.userService=userService;
+        this.passwordEncoder=passwordEncoder;
     }
 
-    @PostMapping
-    public User register(@RequestBody User user) {
-        return service.registerUser(user);
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user){
+        User saved=userService.registerUser(user);
+        return ResponseEntity.ok(saved);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody User user) {
-        // login logic
-        return ResponseEntity.ok("Login successful");
-    }
-
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return service.getUserById(id);
+    public ResponseEntity<Map<String,String>> login(@RequestBody Map<String,String> authRequest){
+        User user=userService.findByEmail(authRequest.get("email"));
+        if(!passwordEncoder.matches(authRequest.get("password"), user.getPassword())){
+            throw new BadRequestException("Invalid email or password");
+        }
+        Map<String,String> response=new HashMap<>();
+        response.put("token","dummy-jwt-token-for-"+user.getEmail());
+        return ResponseEntity.ok(response);
     }
 }
