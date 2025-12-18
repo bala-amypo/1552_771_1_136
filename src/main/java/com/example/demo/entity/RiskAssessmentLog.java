@@ -1,11 +1,33 @@
-package com.example.demo.repository;
+package com.example.demo.entity;
 
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
-import com.example.demo.entity.RiskAssessmentLog;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 
-public interface RiskAssessmentLogRepository extends JpaRepository<RiskAssessmentLog, Long> {
-Optional<RiskAssessmentLog> findByLoanRequestId(Long loanRequestId);
+@Entity
+public class RiskAssessmentLog {
+
+
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+
+
+private Long loanRequestId;
+private Double dtiRatio;
+private String creditCheckStatus;
+private LocalDateTime timestamp;
+
+
+@PrePersist
+void onCreate() {
+this.timestamp = LocalDateTime.now();
+}
+
+
+public RiskAssessmentLog() {}
+
+
+// getters and setters
 }
