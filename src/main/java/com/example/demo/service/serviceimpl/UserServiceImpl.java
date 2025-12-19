@@ -1,4 +1,4 @@
-package com.example.demo.service.impl;
+package com.example.demo.service.serviceimpl;
 
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;

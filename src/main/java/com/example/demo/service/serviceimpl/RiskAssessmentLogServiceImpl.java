@@ -1,4 +1,4 @@
-package com.example.demo.service.impl;
+package com.example.demo.service.serviceimpl;
 
 import com.example.demo.entity.FinancialProfile;
 import com.example.demo.entity.LoanRequest;
@@ -8,11 +8,11 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.RiskAssessmentLogRepository;
-import com.example.demo.service.RiskAssessmentService;
+import com.example.demo.service.RiskAssessmentLogService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RiskAssessmentServiceLogImpl implements RiskAssessmentService {
+public class RiskAssessmentServiceLogImpl implements RiskAssessmentLogService {
 
     private final LoanRequestRepository loanRequestRepository;
     private final FinancialProfileRepository profileRepository;
