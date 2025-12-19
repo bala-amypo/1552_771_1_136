@@ -19,24 +19,79 @@ public class FinancialProfile {
     private Integer creditScore;
     private Double savingsBalance;
 
-    private LocalDateTime lastUpdatedAt = LocalDateTime.now();
+    private LocalDateTime lastUpdatedAt;
 
     public FinancialProfile() {}
 
-    public Long getId() { return id; }
+    @PrePersist
+    @PreUpdate
+    public void updateTimestamp() {
+        this.lastUpdatedAt = LocalDateTime.now();
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    // ===== Getters & Setters =====
 
-    public Double getMonthlyIncome() { return monthlyIncome; }
-    public void setMonthlyIncome(Double monthlyIncome) { this.monthlyIncome = monthlyIncome; }
+    public Long getId() {
+        return id;
+    }
 
-    public Double getMonthlyExpenses() { return monthlyExpenses; }
-    public void setMonthlyExpenses(Double monthlyExpenses) { this.monthlyExpenses = monthlyExpenses; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Double getExistingLoanEmi() { return existingLoanEmi; }
-    public void setExistingLoanEmi(Double existingLoanEmi) { this.existingLoanEmi = existingLoanEmi; }
-
-    public Integer getCreditScore() { return creditScore; }
-    public void setCreditScore(Integer creditScore) { this.creditScore = creditScore; }
+    public User getUser() {
+        return user;
+    }
+ 
+    public void setUser(User user) {
+        this.user = user;
+    }
+ 
+    public Double getMonthlyIncome() {
+        return monthlyIncome;
+    }
+ 
+    public void setMonthlyIncome(Double monthlyIncome) {
+        this.monthlyIncome = monthlyIncome;
+    }
+ 
+    public Double getMonthlyExpenses() {
+        return monthlyExpenses;
+    }
+ 
+    public void setMonthlyExpenses(Double monthlyExpenses) {
+        this.monthlyExpenses = monthlyExpenses;
+    }
+ 
+    public Double getExistingLoanEmi() {
+        return existingLoanEmi;
+    }
+ 
+    public void setExistingLoanEmi(Double existingLoanEmi) {
+        this.existingLoanEmi = existingLoanEmi;
+    }
+ 
+    public Integer getCreditScore() {
+        return creditScore;
+    }
+ 
+    public void setCreditScore(Integer creditScore) {
+        this.creditScore = creditScore;
+    }
+ 
+    public Double getSavingsBalance() {
+        return savingsBalance;
+    }
+ 
+    public void setSavingsBalance(Double savingsBalance) {
+        this.savingsBalance = savingsBalance;
+    }
+ 
+    public LocalDateTime getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+ 
+    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
 }

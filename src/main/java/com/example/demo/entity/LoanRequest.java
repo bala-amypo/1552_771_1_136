@@ -15,23 +15,74 @@ public class LoanRequest {
 
     private Double requestedAmount;
     private Integer tenureMonths;
-    private String status = "PENDING";
-    private LocalDateTime appliedAt = LocalDateTime.now();
+    private String purpose;
+    private String status;
+
+    private LocalDateTime appliedAt;
 
     public LoanRequest() {}
 
-    public Long getId() { return id; }
+    @PrePersist
+    public void onCreate() {
+        this.appliedAt = LocalDateTime.now();
+        this.status = "PENDING";
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    // ===== Getters & Setters =====
 
-    public Double getRequestedAmount() { return requestedAmount; }
+    public Long getId() {
+        return id;
+    }
+ 
+    public void setId(Long id) {
+        this.id = id;
+    }
+ 
+    public User getUser() {
+        return user;
+    }
+ 
+    public void setUser(User user) {
+        this.user = user;
+    }
+ 
+    public Double getRequestedAmount() {
+        return requestedAmount;
+    }
+ 
     public void setRequestedAmount(Double requestedAmount) {
         this.requestedAmount = requestedAmount;
     }
-
-    public Integer getTenureMonths() { return tenureMonths; }
+ 
+    public Integer getTenureMonths() {
+        return tenureMonths;
+    }
+ 
     public void setTenureMonths(Integer tenureMonths) {
         this.tenureMonths = tenureMonths;
+    }
+ 
+    public String getPurpose() {
+        return purpose;
+    }
+ 
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+ 
+    public String getStatus() {
+        return status;
+    }
+ 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+ 
+    public LocalDateTime getAppliedAt() {
+        return appliedAt;
+    }
+ 
+    public void setAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
     }
 }
