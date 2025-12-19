@@ -1,4 +1,4 @@
-package com.example.demo.service.serviceimpl;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.FinancialProfile;
 import com.example.demo.entity.LoanRequest;
@@ -8,11 +8,11 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.RiskAssessmentLogRepository;
-import com.example.demo.service.RiskAssessmentLogService;
+import com.example.demo.service.RiskAssessmentService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RiskAssessmentServiceLogImpl implements RiskAssessmentLogService {
+public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     private final LoanRequestRepository loanRequestRepository;
     private final FinancialProfileRepository profileRepository;
@@ -28,7 +28,7 @@ public class RiskAssessmentServiceLogImpl implements RiskAssessmentLogService {
     }
 
     @Override
-    public RiskAssessmentLog assessRisk(Long loanRequestId) {
+    public RiskAssessmentLog assessRisk(Long loanRequestId) {  // ✅ return type present
         if(!riskRepository.findByLoanRequestId(loanRequestId).isEmpty()) {
             throw new BadRequestException("Risk already assessed");
         }
@@ -39,7 +39,8 @@ public class RiskAssessmentServiceLogImpl implements RiskAssessmentLogService {
         FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
 
-        double totalObligations = profile.getMonthlyExpenses() + (profile.getExistingLoanEmi() != null ? profile.getExistingLoanEmi() : 0);
+        double totalObligations = profile.getMonthlyExpenses() + 
+                (profile.getExistingLoanEmi() != null ? profile.getExistingLoanEmi() : 0);
         double dti = totalObligations / profile.getMonthlyIncome();
 
         String status = dti < 0.5 && profile.getCreditScore() >= 600 ? "APPROVED" : "REJECTED";
