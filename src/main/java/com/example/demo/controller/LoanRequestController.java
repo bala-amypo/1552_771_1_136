@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.LoanRequest;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.service.LoanRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,16 @@ import java.util.List;
 public class LoanRequestController {
 
     private final LoanRequestService loanService;
-    public LoanRequestController(LoanRequestService loanService) { this.loanService = loanService; }
 
-    @PostMapping
+    public LoanRequestController(LoanRequestService loanService) {
+        this.loanService = loanService;
+    }
+
+    @PostMapping("/")
     public ResponseEntity<LoanRequest> submitRequest(@RequestBody LoanRequest request) {
+        if (request.getRequestedAmount() == null || request.getRequestedAmount() <= 0) {
+            throw new BadRequestException("Requested amount must be > 0");
+        }
         return ResponseEntity.ok(loanService.submitRequest(request));
     }
 
@@ -29,7 +36,7 @@ public class LoanRequestController {
         return ResponseEntity.ok(loanService.getById(id));
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<LoanRequest>> getAll() {
         return ResponseEntity.ok(loanService.getAllRequests());
     }
