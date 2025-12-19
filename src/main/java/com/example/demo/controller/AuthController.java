@@ -1,25 +1,23 @@
 package com.example.demo.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "auth-controller")
 public class AuthController {
 
-    private final UserService userService;
+    private final UserService service;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(UserService service) {
+        this.service = service;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userService.register(user));
+    public User register(@RequestBody User user) {
+        return service.register(user);
     }
 }
