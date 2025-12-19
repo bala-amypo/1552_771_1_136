@@ -1,28 +1,27 @@
-package com.example.demo.service.impl;
+package com.example.demo.service.serviceimpl;
 
 import com.example.demo.entity.RiskAssessmentLog;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.RiskAssessmentLogRepository;
-import com.example.demo.service.RiskAssessmentService;
+import com.example.demo.service.RiskAssessmentLogService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class RiskAssessmentServiceImpl implements RiskAssessmentService {
+public class RiskAssessmentLogServiceImpl implements RiskAssessmentLogService {
 
-    private final RiskAssessmentLogRepository repository;
+    @Autowired
+    private RiskAssessmentLogRepository riskAssessmentLogRepository;
 
-    public RiskAssessmentServiceImpl(RiskAssessmentLogRepository repository) {
-        this.repository = repository;
+    @Override
+    public RiskAssessmentLog logAssessment(RiskAssessmentLog log) {
+        return riskAssessmentLogRepository.save(log);
     }
 
     @Override
-    public List<RiskAssessmentLog> getLogs(Long loanRequestId) {
-        List<RiskAssessmentLog> logs = repository.findByLoanRequestId(loanRequestId);
-        if (logs.isEmpty()) {
-            throw new ResourceNotFoundException("Risk log not found");
-        }
-        return logs;
+    public List<RiskAssessmentLog> getLogsByRequest(Long loanRequestId) {
+        return riskAssessmentLogRepository.findByLoanRequestId(loanRequestId);
     }
 }
