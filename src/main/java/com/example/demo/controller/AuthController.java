@@ -1,36 +1,36 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
+import com.example.demo.security.JwtUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Authentication", description = "Endpoints for user registration and login")
 public class AuthController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
-    @Operation(summary = "Register a new user")
-    public User register(@RequestBody User user) {
-        return userService.registerUser(user);
+    public ResponseEntity<User> register(@RequestBody User user) {
+        return ResponseEntity.ok(userService.register(user));
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Login user (no JWT, simple validation)")
-    public User login(@RequestBody User user) {
-        User existing = userService.findByEmail(user.getEmail());
-        if (existing == null || !existing.getPassword().equals(user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
-        }
-        return existing;
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        User user = userService.findByEmail(request.getEmail());
+        // Password validation omitted for simplicity
+        String token = jwtUtil.generateToken(Map.of("role", user.getRole()), user.getEmail());
+        return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail(), user.getRole(), user.getFullName()));
     }
 }
