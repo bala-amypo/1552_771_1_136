@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -18,40 +18,27 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody AuthRequest request) {
-        User user = new User();
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setRole("CUSTOMER");
-
+    public ResponseEntity<User> register(@RequestBody User user) {
         User savedUser = userService.register(user);
-
-        AuthResponse response = new AuthResponse();
-        response.setUserId(savedUser.getId());
-        response.setEmail(savedUser.getEmail());
-        response.setFullName(savedUser.getFullName());
-        response.setRole(savedUser.getRole());
-        // Token generation skipped if JWT not used
-        response.setToken("dummy-token");
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(savedUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        User user = userService.findByEmail(request.getEmail());
-        if (user == null || !user.getPassword().equals(request.getPassword())) {
+    public ResponseEntity<User> login(@RequestBody User user) {
+        User found = userService.findByEmail(user.getEmail());
+        if (found == null || !found.getPassword().equals(user.getPassword())) {
             return ResponseEntity.status(401).body(null);
         }
+        return ResponseEntity.ok(found);
+    }
 
-        AuthResponse response = new AuthResponse();
-        response.setUserId(user.getId());
-        response.setEmail(user.getEmail());
-        response.setFullName(user.getFullName());
-        response.setRole(user.getRole());
-        response.setToken("dummy-token"); // Token placeholder
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
 
-        return ResponseEntity.ok(response);
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getById(id));
     }
 }

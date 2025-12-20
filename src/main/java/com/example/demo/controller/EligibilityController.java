@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.LoanDtos;
 import com.example.demo.entity.EligibilityResult;
 import com.example.demo.service.LoanEligibilityService;
 import org.springframework.http.ResponseEntity;
@@ -17,27 +16,12 @@ public class EligibilityController {
     }
 
     @PostMapping("/evaluate/{loanRequestId}")
-    public ResponseEntity<LoanDtos.EligibilityResultDto> evaluate(@PathVariable Long loanRequestId) {
-        EligibilityResult result = eligibilityService.evaluateEligibility(loanRequestId);
-        return ResponseEntity.ok(mapToDto(result));
+    public ResponseEntity<EligibilityResult> evaluate(@PathVariable Long loanRequestId) {
+        return ResponseEntity.ok(eligibilityService.evaluateEligibility(loanRequestId));
     }
 
     @GetMapping("/result/{loanRequestId}")
-    public ResponseEntity<LoanDtos.EligibilityResultDto> getResult(@PathVariable Long loanRequestId) {
-        EligibilityResult result = eligibilityService.getByLoanRequestId(loanRequestId);
-        return ResponseEntity.ok(mapToDto(result));
-    }
-
-    private LoanDtos.EligibilityResultDto mapToDto(EligibilityResult result) {
-        LoanDtos.EligibilityResultDto dto = new LoanDtos.EligibilityResultDto();
-        dto.setId(result.getId());
-        dto.setLoanRequestId(result.getLoanRequest().getId());
-        dto.setIsEligible(result.getIsEligible());
-        dto.setMaxEligibleAmount(result.getMaxEligibleAmount());
-        dto.setEstimatedEmi(result.getEstimatedEmi());
-        dto.setRiskLevel(result.getRiskLevel());
-        dto.setRejectionReason(result.getRejectionReason());
-        dto.setCalculatedAt(result.getCalculatedAt());
-        return dto;
+    public ResponseEntity<EligibilityResult> getResult(@PathVariable Long loanRequestId) {
+        return ResponseEntity.ok(eligibilityService.getByLoanRequestId(loanRequestId));
     }
 }

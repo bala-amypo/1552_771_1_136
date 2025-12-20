@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.LoanDtos;
 import com.example.demo.entity.RiskAssessmentLog;
 import com.example.demo.service.RiskAssessmentService;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +15,13 @@ public class RiskLogController {
         this.riskService = riskService;
     }
 
+    @PostMapping("/assess/{loanRequestId}")
+    public ResponseEntity<RiskAssessmentLog> assessRisk(@PathVariable Long loanRequestId) {
+        return ResponseEntity.ok(riskService.assessRisk(loanRequestId));
+    }
+
     @GetMapping("/{loanRequestId}")
-    public ResponseEntity<LoanDtos.RiskAssessmentLogDto> getRiskLog(@PathVariable Long loanRequestId) {
-        RiskAssessmentLog log = riskService.getByLoanRequestId(loanRequestId);
-        LoanDtos.RiskAssessmentLogDto dto = new LoanDtos.RiskAssessmentLogDto();
-        dto.setId(log.getId());
-        dto.setLoanRequestId(log.getLoanRequestId());
-        dto.setDtiRatio(log.getDtiRatio());
-        dto.setCreditCheckStatus(log.getCreditCheckStatus());
-        dto.setTimestamp(log.getTimestamp());
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<RiskAssessmentLog> getRiskLog(@PathVariable Long loanRequestId) {
+        return ResponseEntity.ok(riskService.getByLoanRequestId(loanRequestId));
     }
 }
