@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 public class LoanRequest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,22 +14,13 @@ public class LoanRequest {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
     private Double requestedAmount;
-
-    @Column(nullable = false)
     private Integer tenureMonths;
-
     private String purpose;
 
-    @Column(nullable = false)
     private String status = "PENDING";
 
-    @Column(nullable = false, updatable = false)
     private LocalDateTime appliedAt = LocalDateTime.now();
-
-    @OneToOne(mappedBy = "loanRequest")
-    private EligibilityResult eligibilityResult;
 
     public LoanRequest() {}
 
@@ -39,20 +31,25 @@ public class LoanRequest {
     public void setUser(User user) { this.user = user; }
 
     public Double getRequestedAmount() { return requestedAmount; }
-    public void setRequestedAmount(Double requestedAmount) { this.requestedAmount = requestedAmount; }
+    public void setRequestedAmount(Double requestedAmount) {
+        this.requestedAmount = requestedAmount;
+    }
 
     public Integer getTenureMonths() { return tenureMonths; }
-    public void setTenureMonths(Integer tenureMonths) { this.tenureMonths = tenureMonths; }
+    public void setTenureMonths(Integer tenureMonths) {
+        this.tenureMonths = tenureMonths;
+    }
 
     public String getPurpose() { return purpose; }
-    public void setPurpose(String purpose) { this.purpose = purpose; }
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
     public LocalDateTime getAppliedAt() { return appliedAt; }
-    public void setAppliedAt(LocalDateTime appliedAt) { this.appliedAt = appliedAt; }
-
-    public EligibilityResult getEligibilityResult() { return eligibilityResult; }
-    public void setEligibilityResult(EligibilityResult eligibilityResult) { this.eligibilityResult = eligibilityResult; }
+    public void setAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
+    }
 }
