@@ -1,28 +1,26 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.EligibilityResult;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.service.LoanEligibilityService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/eligibility")
 public class EligibilityController {
 
-    private final LoanEligibilityService eligibilityService;
+    private final LoanEligibilityService loanEligibilityService;
 
-    public EligibilityController(LoanEligibilityService eligibilityService) {
-        this.eligibilityService = eligibilityService;
+    public EligibilityController(LoanEligibilityService loanEligibilityService) {
+        this.loanEligibilityService = loanEligibilityService;
     }
 
     @PostMapping("/evaluate/{loanRequestId}")
-    public ResponseEntity<EligibilityResult> evaluate(@PathVariable Long loanRequestId) {
-        return ResponseEntity.ok(eligibilityService.evaluateEligibility(loanRequestId));
+    public EligibilityResult evaluate(@PathVariable Long loanRequestId) {
+        return loanEligibilityService.evaluateEligibility(loanRequestId);
     }
 
     @GetMapping("/result/{loanRequestId}")
-    public ResponseEntity<EligibilityResult> getResult(@PathVariable Long loanRequestId) {
-        return ResponseEntity.ok(eligibilityService.getByLoanRequestId(loanRequestId));
+    public EligibilityResult getResult(@PathVariable Long loanRequestId) {
+        return loanEligibilityService.getByLoanRequestId(loanRequestId);
     }
 }
