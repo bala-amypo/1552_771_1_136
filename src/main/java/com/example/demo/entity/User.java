@@ -4,16 +4,14 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-    name = "users",
-    uniqueConstraints = @UniqueConstraint(columnNames = "email")
-)
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String fullName;
 
     @Column(nullable = false, unique = true)
@@ -22,10 +20,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String role = "CUSTOMER";
 
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Constructors
     public User() {}
 
     public User(String fullName, String email, String password, String role) {
@@ -35,6 +36,7 @@ public class User {
         this.role = role;
     }
 
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
