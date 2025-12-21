@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/risk-logs")
 public class RiskLogController {
-
     private final RiskAssessmentService riskService;
 
     public RiskLogController(RiskAssessmentService riskService) {
@@ -16,12 +15,12 @@ public class RiskLogController {
     }
 
     @PostMapping("/assess/{loanRequestId}")
-    public ResponseEntity<RiskAssessmentLog> assessRisk(@PathVariable Long loanRequestId) {
+    public ResponseEntity<RiskAssessmentLog> assess(@PathVariable Long loanRequestId) {
         return ResponseEntity.ok(riskService.assessRisk(loanRequestId));
     }
 
     @GetMapping("/{loanRequestId}")
-    public ResponseEntity<RiskAssessmentLog> getRiskLog(@PathVariable Long loanRequestId) {
+    public ResponseEntity<RiskAssessmentLog> getLogs(@PathVariable Long loanRequestId) {
         return ResponseEntity.ok(riskService.getByLoanRequestId(loanRequestId));
     }
 }

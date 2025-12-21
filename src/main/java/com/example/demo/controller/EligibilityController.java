@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/eligibility")
 public class EligibilityController {
-
     private final LoanEligibilityService eligibilityService;
 
     public EligibilityController(LoanEligibilityService eligibilityService) {
