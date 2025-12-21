@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/financial-profiles")
 public class FinancialProfileController {
-
     private final FinancialProfileService profileService;
 
     public FinancialProfileController(FinancialProfileService profileService) {
         this.profileService = profileService;
     }
 
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<FinancialProfile> createOrUpdate(@RequestBody FinancialProfile profile) {
         return ResponseEntity.ok(profileService.createOrUpdate(profile));
     }
