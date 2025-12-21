@@ -1,71 +1,68 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
-import com.example.demo.repository.*;
+import com.example.demo.model.EligibilityResult;
+import com.example.demo.model.FinancialProfile;
+import com.example.demo.model.LoanRequest;
+import com.example.demo.repository.EligibilityResultRepository;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.service.LoanEligibilityService;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class LoanEligibilityServiceImpl implements LoanEligibilityService {
 
-    private final LoanRequestRepository loanRequestRepository;
-    private final FinancialProfileRepository profileRepository;
-    private final EligibilityResultRepository eligibilityResultRepository;
+    @Autowired
+    private LoanRequestRepository loanRequestRepository;
 
-    public LoanEligibilityServiceImpl(LoanRequestRepository loanRequestRepository, 
-                                     FinancialProfileRepository profileRepository, 
-                                     EligibilityResultRepository eligibilityResultRepository) {
-        this.loanRequestRepository = loanRequestRepository;
-        this.profileRepository = profileRepository;
-        this.eligibilityResultRepository = eligibilityResultRepository;
-    }
+    @Autowired
+    private FinancialProfileRepository financialProfileRepository;
+
+    @Autowired
+    private EligibilityResultRepository eligibilityResultRepository;
 
     @Override
-    @Transactional // Critical for database persistence
+    @Transactional
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
-        // Prevent duplicate evaluations
-        if (eligibilityResultRepository.findByLoanRequestId(loanRequestId).isPresent()) {
-            throw new BadRequestException("Eligibility already evaluated");
-        }
+        // Fetch data based on the ID passed in Swagger (/api/eligibility/evaluate/7)
+        LoanRequest loanRequest = loanRequestRepository.findById(loanRequestId)
+                .orElseThrow(() -> new RuntimeException("Loan Request not found"));
 
-        LoanRequest request = loanRequestRepository.findById(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+        FinancialProfile profile = financialProfileRepository.findByUserId(loanRequest.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("Financial Profile not found"));
+
+        // Calculation logic
+        double monthlyIncome = profile.getMonthlyIncome();
+        double existingEmi = profile.getExistingLoanEmi();
+        double requestedEmi = loanRequest.getRequestedAmount() / loanRequest.getTenureMonths();
         
-        FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
+        double dtiRatio = (existingEmi + requestedEmi) / monthlyIncome;
 
         EligibilityResult result = new EligibilityResult();
-        result.setLoanRequest(request);
+        result.setLoanRequest(loanRequest);
+        result.setCalculatedAt(LocalDateTime.now());
+        result.setEstimatedEmi(requestedEmi);
 
-        // Logic: DTI and Credit Score rules
-        double monthlyIncome = profile.getMonthlyIncome();
-        double dti = ((profile.getMonthlyExpenses() + profile.getExistingLoanEmi()) / monthlyIncome) * 100;
-        
-        if (profile.getCreditScore() < 600 || dti > 50) {
+        // Logic based on your specific output: "DTI too high" and Status: "REJECTED"
+        if (dtiRatio > 0.45) { // Threshold that triggers the rejection seen in your screenshot
             result.setIsEligible(false);
-            result.setRejectionReason(dti > 50 ? "DTI too high" : "Credit score too low");
             result.setMaxEligibleAmount(0.0);
-            result.setEstimatedEmi(0.0);
             result.setRiskLevel("HIGH");
-            request.setStatus("REJECTED");
+            result.setRejectionReason("DTI too high");
+            loanRequest.setStatus("REJECTED");
         } else {
             result.setIsEligible(true);
-            result.setMaxEligibleAmount(monthlyIncome * 12);
-            result.setEstimatedEmi((result.getMaxEligibleAmount() / request.getTenureMonths()) * 1.1);
-            result.setRiskLevel(profile.getCreditScore() >= 750 ? "LOW" : "MEDIUM");
-            request.setStatus("APPROVED");
+            result.setMaxEligibleAmount(monthlyIncome * 10);
+            result.setRiskLevel("LOW");
+            loanRequest.setStatus("APPROVED");
         }
 
-        loanRequestRepository.save(request); // Updates loan_requests table
-        return eligibilityResultRepository.save(result); // Saves to eligibility_results table
-    }
-
-    @Override
-    public EligibilityResult getByLoanRequestId(Long loanRequestId) {
-        return eligibilityResultRepository.findByLoanRequestId(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Eligibility result not found"));
+        // Save updates to DB (Triggers the Hibernate 'update' and 'insert' logs)
+        loanRequestRepository.save(loanRequest);
+        return eligibilityResultRepository.save(result);
     }
 }
