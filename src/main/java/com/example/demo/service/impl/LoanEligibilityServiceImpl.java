@@ -23,7 +23,6 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
 
     @Override
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
-        // Check if already evaluated
         if (resultRepository.findByLoanRequestId(loanRequestId).isPresent()) {
             throw new BadRequestException("Eligibility already evaluated");
         }
@@ -37,27 +36,33 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
         EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(request);
 
-        // Business Logic
         double monthlyIncome = profile.getMonthlyIncome();
-        double existingObligations = profile.getMonthlyExpenses() + (profile.getExistingLoanEmi() != null ? profile.getExistingLoanEmi() : 0);
-        double dti = existingObligations / monthlyIncome;
+        double expenses = profile.getMonthlyExpenses() + (profile.getExistingLoanEmi() != null ? profile.getExistingLoanEmi() : 0);
+        double dti = expenses / monthlyIncome;
 
-        if (profile.getCreditScore() < 650) {
+        if (profile.getCreditScore() < 600) {
             result.setIsEligible(false);
             result.setRejectionReason("Low creditScore");
             result.setRiskLevel("HIGH");
-        } else if (dti > 0.45) {
+        } else if (dti > 0.5) {
             result.setIsEligible(false);
             result.setRejectionReason("High DTI ratio");
             result.setRiskLevel("HIGH");
         } else {
             result.setIsEligible(true);
-            double maxAmount = monthlyIncome * 12; // Example logic
+            double maxAmount = monthlyIncome * 10;
             result.setMaxEligibleAmount(maxAmount);
             result.setEstimatedEmi(maxAmount / request.getTenureMonths());
             result.setRiskLevel(profile.getCreditScore() > 750 ? "LOW" : "MEDIUM");
         }
 
         return resultRepository.save(result);
+    }
+
+    // This was the missing method causing the error
+    @Override
+    public EligibilityResult getByLoanRequestId(Long loanRequestId) {
+        return resultRepository.findByLoanRequestId(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Eligibility result not found"));
     }
 }
