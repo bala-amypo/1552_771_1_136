@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoanEligibilityServiceImpl implements LoanEligibilityService {
+
     private final LoanRequestRepository loanRequestRepository;
     private final FinancialProfileRepository profileRepository;
     private final EligibilityResultRepository resultRepository;
 
+    // Constructor injection only
     public LoanEligibilityServiceImpl(LoanRequestRepository loanRequestRepository, 
                                      FinancialProfileRepository profileRepository, 
                                      EligibilityResultRepository resultRepository) {
@@ -23,43 +25,59 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
 
     @Override
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
+        // 1. Prevent duplicate evaluation
         if (resultRepository.findByLoanRequestId(loanRequestId).isPresent()) {
             throw new BadRequestException("Eligibility already evaluated");
         }
 
+        // 2. Fetch Loan Request
         LoanRequest request = loanRequestRepository.findById(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
 
+        // 3. Fetch Financial Profile
         FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
 
         EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(request);
 
+        // 4. Calculate DTI (Debt-to-Income ratio)
         double monthlyIncome = profile.getMonthlyIncome();
-        double expenses = profile.getMonthlyExpenses() + (profile.getExistingLoanEmi() != null ? profile.getExistingLoanEmi() : 0);
-        double dti = expenses / monthlyIncome;
+        double emiObligations = (profile.getExistingLoanEmi() != null) ? profile.getExistingLoanEmi() : 0.0;
+        double totalMonthlyObligations = profile.getMonthlyExpenses() + emiObligations;
+        double dtiRatio = totalMonthlyObligations / monthlyIncome;
 
+        // 5. Apply Business Rules
+        // Rule: Credit Score must be within 300-900 range
         if (profile.getCreditScore() < 600) {
             result.setIsEligible(false);
             result.setRejectionReason("Low creditScore");
             result.setRiskLevel("HIGH");
-        } else if (dti > 0.5) {
+        } 
+        // Rule: DTI threshold
+        else if (dtiRatio > 0.5) {
             result.setIsEligible(false);
             result.setRejectionReason("High DTI ratio");
             result.setRiskLevel("HIGH");
-        } else {
+        } 
+        else {
             result.setIsEligible(true);
-            double maxAmount = monthlyIncome * 10;
+            // Logic: Max amount based on income
+            double maxAmount = monthlyIncome * 10; 
             result.setMaxEligibleAmount(maxAmount);
             result.setEstimatedEmi(maxAmount / request.getTenureMonths());
-            result.setRiskLevel(profile.getCreditScore() > 750 ? "LOW" : "MEDIUM");
+            
+            // Determine riskLevel
+            if (profile.getCreditScore() > 750) {
+                result.setRiskLevel("LOW");
+            } else {
+                result.setRiskLevel("MEDIUM");
+            }
         }
 
         return resultRepository.save(result);
     }
 
-    // This was the missing method causing the error
     @Override
     public EligibilityResult getByLoanRequestId(Long loanRequestId) {
         return resultRepository.findByLoanRequestId(loanRequestId)
