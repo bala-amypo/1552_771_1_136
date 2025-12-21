@@ -1,12 +1,14 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.User;
 import com.example.demo.repository.FinancialProfileRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FinancialProfileService;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FinancialProfileServiceImpl implements FinancialProfileService {
@@ -20,41 +22,35 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
     }
 
     @Override
+    @Transactional
     public FinancialProfile createOrUpdate(FinancialProfile profile) {
-        // 1. Validation Logic
-        if (profile.getMonthlyIncome() <= 0) {
-            throw new BadRequestException("monthlyIncome must be greater than 0");
-        }
-        if (profile.getCreditScore() < 300 || profile.getCreditScore() > 900) {
-            throw new BadRequestException("creditScore must be between 300 and 900");
-        }
-        if (profile.getSavingsBalance() < 0) {
-            throw new BadRequestException("savingsBalance cannot be negative");
-        }
+        // Validation per requirements
+        if (profile.getMonthlyIncome() <= 0) throw new BadRequestException("monthlyIncome must be > 0");
+        if (profile.getCreditScore() < 300 || profile.getCreditScore() > 900) throw new BadRequestException("creditScore must be 300-900");
 
-        // 2. Check if User exists
-        Long userId = profile.getUser().getId();
-        if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User not found");
-        }
+        // Fetch User to ensure they exist in DB
+        User user = userRepository.findById(profile.getUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // 3. Enforce one profile per user logic
-        return profileRepository.findByUserId(userId)
-            .map(existingProfile -> {
-                // Update logic
-                existingProfile.setMonthlyIncome(profile.getMonthlyIncome());
-                existingProfile.setMonthlyExpenses(profile.getMonthlyExpenses());
-                existingProfile.setExistingLoanEmi(profile.getExistingLoanEmi());
-                existingProfile.setCreditScore(profile.getCreditScore());
-                existingProfile.setSavingsBalance(profile.getSavingsBalance());
-                return profileRepository.save(existingProfile);
+        // Check if profile exists for this user
+        return profileRepository.findByUserId(user.getId())
+            .map(existing -> {
+                existing.setMonthlyIncome(profile.getMonthlyIncome());
+                existing.setMonthlyExpenses(profile.getMonthlyExpenses());
+                existing.setExistingLoanEmi(profile.getExistingLoanEmi());
+                existing.setCreditScore(profile.getCreditScore());
+                existing.setSavingsBalance(profile.getSavingsBalance());
+                return profileRepository.save(existing);
             })
-            .orElseGet(() -> profileRepository.save(profile)); // Create logic
+            .orElseGet(() -> {
+                profile.setUser(user); // Link the detached user object
+                return profileRepository.save(profile);
+            });
     }
 
     @Override
     public FinancialProfile getByUserId(Long userId) {
         return profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found for user"));
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
     }
 }
