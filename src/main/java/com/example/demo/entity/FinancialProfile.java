@@ -4,41 +4,44 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "financial_profiles")
+@Table(name = "financial_profile") // Matches your screenshot
 public class FinancialProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "monthly_income", nullable = false)
     private Double monthlyIncome;
 
-    @Column(nullable = false)
+    @Column(name = "monthly_expenses", nullable = false)
     private Double monthlyExpenses;
 
-    private Double existingLoanEmi = 0.0;
+    @Column(name = "existing_loan_emi")
+    private Double existingLoanEmi;
 
-    @Column(nullable = false)
+    @Column(name = "credit_score", nullable = false)
     private Integer creditScore;
 
-    @Column(nullable = false)
+    @Column(name = "savings_balance", nullable = false)
     private Double savingsBalance;
 
+    @Column(name = "last_updated_at")
     private LocalDateTime lastUpdatedAt;
 
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
-        lastUpdatedAt = LocalDateTime.now();
+        this.lastUpdatedAt = LocalDateTime.now();
     }
 
+    // Default Constructor
     public FinancialProfile() {}
 
-    // Getters and Setters
+    // Getters and Setters (Omitted for brevity, ensure all are present)
     public Long getId() { return id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
@@ -52,5 +55,4 @@ public class FinancialProfile {
     public void setCreditScore(Integer creditScore) { this.creditScore = creditScore; }
     public Double getSavingsBalance() { return savingsBalance; }
     public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
-    public LocalDateTime getLastUpdatedAt() { return lastUpdatedAt; }
 }
