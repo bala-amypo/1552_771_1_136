@@ -28,41 +28,39 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
     @Override
     @Transactional
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
-        // Fetch data based on the ID passed in Swagger (/api/eligibility/evaluate/7)
         LoanRequest loanRequest = loanRequestRepository.findById(loanRequestId)
                 .orElseThrow(() -> new RuntimeException("Loan Request not found"));
 
         FinancialProfile profile = financialProfileRepository.findByUserId(loanRequest.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("Financial Profile not found"));
 
-        // Calculation logic
-        double monthlyIncome = profile.getMonthlyIncome();
-        double existingEmi = profile.getExistingLoanEmi();
         double requestedEmi = loanRequest.getRequestedAmount() / loanRequest.getTenureMonths();
-        
-        double dtiRatio = (existingEmi + requestedEmi) / monthlyIncome;
+        double dtiRatio = (profile.getExistingLoanEmi() + requestedEmi) / profile.getMonthlyIncome();
 
         EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(loanRequest);
         result.setCalculatedAt(LocalDateTime.now());
         result.setEstimatedEmi(requestedEmi);
 
-        // Logic based on your specific output: "DTI too high" and Status: "REJECTED"
-        if (dtiRatio > 0.45) { // Threshold that triggers the rejection seen in your screenshot
+        // This matches the "DTI too high" logic from your Swagger logs
+        if (dtiRatio > 0.4) {
             result.setIsEligible(false);
-            result.setMaxEligibleAmount(0.0);
-            result.setRiskLevel("HIGH");
             result.setRejectionReason("DTI too high");
+            result.setRiskLevel("HIGH");
             loanRequest.setStatus("REJECTED");
         } else {
             result.setIsEligible(true);
-            result.setMaxEligibleAmount(monthlyIncome * 10);
             result.setRiskLevel("LOW");
             loanRequest.setStatus("APPROVED");
         }
 
-        // Save updates to DB (Triggers the Hibernate 'update' and 'insert' logs)
         loanRequestRepository.save(loanRequest);
         return eligibilityResultRepository.save(result);
+    }
+
+    @Override
+    public EligibilityResult getByLoanRequestId(Long loanRequestId) {
+        // Implementation for the missing method error
+        return eligibilityResultRepository.findByLoanRequestId(loanRequestId);
     }
 }
