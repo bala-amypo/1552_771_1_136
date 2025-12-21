@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "loan_requests")
+@Table(name = "loan_requests") // Matches your DB table name
 public class LoanRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false) // Links to the user table
+    @JoinColumn(name = "user_id", nullable = false) // Links to user table
     private User user;
 
     @Column(name = "requested_amount", nullable = false)
@@ -23,20 +23,19 @@ public class LoanRequest {
     private String purpose;
 
     @Column(nullable = false)
-    private String status = "PENDING"; // Default status
+    private String status = "PENDING"; // Default value per rules
 
     @Column(name = "applied_at")
     private LocalDateTime appliedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.appliedAt = LocalDateTime.now(); // Auto-populated
+        this.appliedAt = LocalDateTime.now(); // Auto-populates on creation
     }
 
-    // Default Constructor
     public LoanRequest() {}
 
-    // Getters and Setters
+    // Standard Getters and Setters
     public Long getId() { return id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

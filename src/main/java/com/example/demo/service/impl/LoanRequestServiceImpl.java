@@ -17,26 +17,26 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     private final LoanRequestRepository loanRequestRepository;
     private final UserRepository userRepository;
 
-    // Constructor injection as per architecture rules
+    // Constructor Injection
     public LoanRequestServiceImpl(LoanRequestRepository loanRequestRepository, UserRepository userRepository) {
         this.loanRequestRepository = loanRequestRepository;
         this.userRepository = userRepository;
     }
 
     @Override
-    @Transactional
+    @Transactional // Ensures the record is committed to SQL
     public LoanRequest submitRequest(LoanRequest request) {
-        // Validation logic
+        // Requirement: requestedAmount must be > 0
         if (request.getRequestedAmount() == null || request.getRequestedAmount() <= 0) {
             throw new BadRequestException("Requested amount must be > 0");
         }
 
-        // Must fetch the existing user to avoid "No Content" or null user_id in DB
+        // Must fetch the existing user to maintain foreign key integrity
         User user = userRepository.findById(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
-        request.setUser(user); // Attaches the database user to the request
-        return loanRequestRepository.save(request); // This saves to SQL
+        request.setUser(user); 
+        return loanRequestRepository.save(request); 
     }
 
     @Override
