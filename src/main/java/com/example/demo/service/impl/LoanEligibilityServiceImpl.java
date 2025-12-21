@@ -1,7 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
-import com.example.demo.repository.*;
+import com.example.demo.entity.EligibilityResult;
+import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.LoanRequest;
+import com.example.demo.repository.EligibilityResultRepository;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.service.LoanEligibilityService;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
@@ -15,6 +19,7 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
     private final FinancialProfileRepository profileRepository;
     private final EligibilityResultRepository eligibilityResultRepository;
 
+    // Constructor Injection
     public LoanEligibilityServiceImpl(LoanRequestRepository loanRequestRepository, 
                                      FinancialProfileRepository profileRepository, 
                                      EligibilityResultRepository eligibilityResultRepository) {
@@ -26,48 +31,56 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
     @Override
     @Transactional
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
-        // 1. Check if already evaluated
+        // Enforce uniqueness: throw exception if already evaluated
         if (eligibilityResultRepository.findByLoanRequestId(loanRequestId).isPresent()) {
             throw new BadRequestException("Eligibility already evaluated");
         }
 
-        // 2. Fetch dependencies
+        // Fetch required data
         LoanRequest request = loanRequestRepository.findById(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+        
         FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found for user"));
 
         EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(request);
 
-        // 3. Business Rules Logic
+        // Business Rule: Calculate DTI (Debt-to-Income)
         double monthlyIncome = profile.getMonthlyIncome();
-        double currentExpenses = profile.getMonthlyExpenses() + profile.getExistingLoanEmi();
-        double dti = (currentExpenses / monthlyIncome) * 100;
+        double existingObligations = profile.getMonthlyExpenses() + profile.getExistingLoanEmi();
+        double dti = (existingObligations / monthlyIncome) * 100;
         int creditScore = profile.getCreditScore();
 
-        // 4. Determine Risk Level
-        if (creditScore >= 750) result.setRiskLevel("LOW");
-        else if (creditScore >= 650) result.setRiskLevel("MEDIUM");
-        else result.setRiskLevel("HIGH");
+        // Determine Risk Level
+        if (creditScore >= 750) {
+            result.setRiskLevel("LOW");
+        } else if (creditScore >= 650) {
+            result.setRiskLevel("MEDIUM");
+        } else {
+            result.setRiskLevel("HIGH");
+        }
 
-        // 5. Calculate Max Amount & Eligibility
-        double maxAllowedDti = 50.0; // Rule: Expenses shouldn't exceed 50% of income
-        if (dti > maxAllowedDti || creditScore < 600) {
+        // Apply Eligibility Rules
+        if (creditScore < 600 || dti > 50.0) {
             result.setIsEligible(false);
-            result.setRejectionReason(dti > maxAllowedDti ? "DTI too high" : "Credit score too low");
+            result.setRejectionReason(creditScore < 600 ? "Credit score below 600" : "DTI exceeds 50%");
             result.setMaxEligibleAmount(0.0);
             result.setEstimatedEmi(0.0);
             request.setStatus("REJECTED");
         } else {
             result.setIsEligible(true);
-            // Example Max Amount calculation: Income * 10
-            result.setMaxEligibleAmount(monthlyIncome * 10);
-            double emi = (result.getMaxEligibleAmount() / request.getTenureMonths()) * 1.1; // Amount/tenure + 10% interest
+            // Calculate max amount: monthlyIncome * 10 (example rule)
+            double maxAmount = monthlyIncome * 10;
+            result.setMaxEligibleAmount(maxAmount);
+            
+            // Calculate EMI: (Amount / Tenure) + 10% interest
+            double emi = (maxAmount / request.getTenureMonths()) * 1.1;
             result.setEstimatedEmi(emi);
             request.setStatus("APPROVED");
         }
 
+        // Update loan request status and save result
         loanRequestRepository.save(request);
         return eligibilityResultRepository.save(result);
     }
@@ -75,6 +88,6 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
     @Override
     public EligibilityResult getByLoanRequestId(Long loanRequestId) {
         return eligibilityResultRepository.findByLoanRequestId(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Eligibility result not found"));
     }
 }
