@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "risk_assessment_logs")
 public class RiskAssessmentLog {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,19 +18,14 @@ public class RiskAssessmentLog {
     @Column(nullable = false)
     private String creditCheckStatus;
 
-    @Column(nullable = false)
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp;
 
-    // Constructors
-    public RiskAssessmentLog() {}
-
-    public RiskAssessmentLog(Long loanRequestId, Double dtiRatio, String creditCheckStatus) {
-        this.loanRequestId = loanRequestId;
-        this.dtiRatio = dtiRatio;
-        this.creditCheckStatus = creditCheckStatus;
+    @PrePersist
+    protected void onCreate() {
+        this.timestamp = LocalDateTime.now();
     }
 
-    // Getters & Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

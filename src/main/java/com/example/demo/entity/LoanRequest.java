@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "loan_requests")
 public class LoanRequest {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,23 +24,14 @@ public class LoanRequest {
     @Column(nullable = false)
     private String status = "PENDING";
 
-    @Column(nullable = false)
-    private LocalDateTime appliedAt = LocalDateTime.now();
+    private LocalDateTime appliedAt;
 
-    @OneToOne(mappedBy = "loanRequest", cascade = CascadeType.ALL)
-    private EligibilityResult eligibilityResult;
-
-    // Constructors
-    public LoanRequest() {}
-
-    public LoanRequest(User user, Double requestedAmount, Integer tenureMonths, String purpose) {
-        this.user = user;
-        this.requestedAmount = requestedAmount;
-        this.tenureMonths = tenureMonths;
-        this.purpose = purpose;
+    @PrePersist
+    protected void onCreate() {
+        this.appliedAt = LocalDateTime.now();
     }
 
-    // Getters & Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -63,7 +52,4 @@ public class LoanRequest {
 
     public LocalDateTime getAppliedAt() { return appliedAt; }
     public void setAppliedAt(LocalDateTime appliedAt) { this.appliedAt = appliedAt; }
-
-    public EligibilityResult getEligibilityResult() { return eligibilityResult; }
-    public void setEligibilityResult(EligibilityResult eligibilityResult) { this.eligibilityResult = eligibilityResult; }
 }

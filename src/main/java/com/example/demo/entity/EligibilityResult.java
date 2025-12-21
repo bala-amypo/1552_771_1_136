@@ -4,57 +4,58 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
-public class User {
+public class EligibilityResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String fullName;
-
-    @Column(nullable = false, unique = true)
-    private String email;
+    @OneToOne
+    @JoinColumn(name = "loan_request_id", nullable = false)
+    private LoanRequest loanRequest;
 
     @Column(nullable = false)
-    private String password;
+    private Boolean isEligible;
 
     @Column(nullable = false)
-    private String role = "CUSTOMER";
+    private Double maxEligibleAmount;
 
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private Double estimatedEmi;
+
+    @Column(nullable = false)
+    private String riskLevel;
+
+    private String rejectionReason;
+
+    private LocalDateTime calculatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    // Constructors
-    public User() {}
-
-    public User(String fullName, String email, String password, String role) {
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
+        this.calculatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public LoanRequest getLoanRequest() { return loanRequest; }
+    public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public Boolean getIsEligible() { return isEligible; }
+    public void setIsEligible(Boolean isEligible) { this.isEligible = isEligible; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public Double getMaxEligibleAmount() { return maxEligibleAmount; }
+    public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Double getEstimatedEmi() { return estimatedEmi; }
+    public void setEstimatedEmi(Double estimatedEmi) { this.estimatedEmi = estimatedEmi; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getRiskLevel() { return riskLevel; }
+    public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
+
+    public String getRejectionReason() { return rejectionReason; }
+    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+
+    public LocalDateTime getCalculatedAt() { return calculatedAt; }
+    public void setCalculatedAt(LocalDateTime calculatedAt) { this.calculatedAt = calculatedAt; }
 }
