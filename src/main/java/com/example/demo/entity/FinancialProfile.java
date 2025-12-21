@@ -4,15 +4,13 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "financial_profiles")
 public class FinancialProfile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -29,23 +27,15 @@ public class FinancialProfile {
     @Column(nullable = false)
     private Double savingsBalance;
 
-    @Column(nullable = false)
-    private LocalDateTime lastUpdatedAt = LocalDateTime.now();
+    private LocalDateTime lastUpdatedAt;
 
-    // Constructors
-    public FinancialProfile() {}
-
-    public FinancialProfile(User user, Double monthlyIncome, Double monthlyExpenses, Double existingLoanEmi,
-                            Integer creditScore, Double savingsBalance) {
-        this.user = user;
-        this.monthlyIncome = monthlyIncome;
-        this.monthlyExpenses = monthlyExpenses;
-        this.existingLoanEmi = existingLoanEmi;
-        this.creditScore = creditScore;
-        this.savingsBalance = savingsBalance;
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastUpdatedAt = LocalDateTime.now();
     }
 
-    // Getters & Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

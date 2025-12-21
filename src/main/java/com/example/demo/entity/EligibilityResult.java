@@ -4,69 +4,57 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "eligibility_results")
-public class EligibilityResult {
-
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "loan_request_id", nullable = false, unique = true)
-    private LoanRequest loanRequest;
+    @Column(nullable = false)
+    private String fullName;
+
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @Column(nullable = false)
-    private Boolean isEligible;
+    private String password;
 
     @Column(nullable = false)
-    private Double maxEligibleAmount;
+    private String role = "CUSTOMER";
 
-    @Column(nullable = false)
-    private Double estimatedEmi;
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private String riskLevel;
-
-    private String rejectionReason;
-
-    @Column(nullable = false)
-    private LocalDateTime calculatedAt = LocalDateTime.now();
-
-    // Constructors
-    public EligibilityResult() {}
-
-    public EligibilityResult(LoanRequest loanRequest, Boolean isEligible, Double maxEligibleAmount,
-                             Double estimatedEmi, String riskLevel, String rejectionReason) {
-        this.loanRequest = loanRequest;
-        this.isEligible = isEligible;
-        this.maxEligibleAmount = maxEligibleAmount;
-        this.estimatedEmi = estimatedEmi;
-        this.riskLevel = riskLevel;
-        this.rejectionReason = rejectionReason;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    // Getters & Setters
+    // Constructors
+    public User() {}
+
+    public User(String fullName, String email, String password, String role) {
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public LoanRequest getLoanRequest() { return loanRequest; }
-    public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public Boolean getIsEligible() { return isEligible; }
-    public void setIsEligible(Boolean isEligible) { this.isEligible = isEligible; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public Double getMaxEligibleAmount() { return maxEligibleAmount; }
-    public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public Double getEstimatedEmi() { return estimatedEmi; }
-    public void setEstimatedEmi(Double estimatedEmi) { this.estimatedEmi = estimatedEmi; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public String getRiskLevel() { return riskLevel; }
-    public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
-
-    public String getRejectionReason() { return rejectionReason; }
-    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
-
-    public LocalDateTime getCalculatedAt() { return calculatedAt; }
-    public void setCalculatedAt(LocalDateTime calculatedAt) { this.calculatedAt = calculatedAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
