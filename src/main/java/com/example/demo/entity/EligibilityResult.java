@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "eligibility_results")
+@Table(name = "eligibility_result") // Matches your SQL Viewer query exactly
 public class EligibilityResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "loan_request_id", nullable = false, unique = true)
+    @JoinColumn(name = "loan_request_id", nullable = false)
     private LoanRequest loanRequest;
 
     @Column(nullable = false)
@@ -28,7 +28,6 @@ public class EligibilityResult {
 
     private String rejectionReason;
 
-    @Column(name = "calculated_at")
     private LocalDateTime calculatedAt;
 
     @PrePersist
@@ -36,14 +35,16 @@ public class EligibilityResult {
         this.calculatedAt = LocalDateTime.now();
     }
 
+    // Default Constructor
     public EligibilityResult() {}
 
     // Getters and Setters
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public LoanRequest getLoanRequest() { return loanRequest; }
     public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
     public Boolean getIsEligible() { return isEligible; }
-    public void setIsEligible(Boolean eligible) { isEligible = eligible; }
+    public void setIsEligible(Boolean isEligible) { this.isEligible = isEligible; }
     public Double getMaxEligibleAmount() { return maxEligibleAmount; }
     public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
     public Double getEstimatedEmi() { return estimatedEmi; }
