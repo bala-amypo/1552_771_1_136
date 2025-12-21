@@ -3,9 +3,9 @@ package com.example.demo.service;
 import com.example.demo.entity.EligibilityResult;
 
 public interface LoanEligibilityService {
-    // Runs the evaluation logic and persists the result
+    // Evaluates eligibility based on business rules and persists the result
     EligibilityResult evaluateEligibility(Long loanRequestId);
     
-    // Retrieves an existing result
+    // Retrieves eligibility result for a specific loan request
     EligibilityResult getByLoanRequestId(Long loanRequestId);
 }
