@@ -17,13 +17,13 @@ public class EligibilityResult {
     @Column(nullable = false)
     private Boolean isEligible;
 
-    @Column(nullable = false)
+    @Column(name = "max_eligible_amount", nullable = false)
     private Double maxEligibleAmount;
 
-    @Column(nullable = false)
+    @Column(name = "estimated_emi", nullable = false)
     private Double estimatedEmi;
 
-    @Column(nullable = false)
+    @Column(name = "risk_level", nullable = false)
     private String riskLevel;
 
     private String rejectionReason;
@@ -47,10 +47,9 @@ public class EligibilityResult {
     public Double getMaxEligibleAmount() { return maxEligibleAmount; }
     public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
     public Double getEstimatedEmi() { return estimatedEmi; }
-    public void setEstimatedEmi(Double estimatedEmi) { this.estimatedEmi = estimatedEmi; }
+    public void setEstimatedEmi(Double emi) { this.estimatedEmi = emi; }
     public String getRiskLevel() { return riskLevel; }
     public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
     public String getRejectionReason() { return rejectionReason; }
-    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
-    public LocalDateTime getCalculatedAt() { return calculatedAt; }
+    public void setRejectionReason(String reason) { this.rejectionReason = reason; }
 }

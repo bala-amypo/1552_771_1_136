@@ -24,57 +24,48 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
     }
 
     @Override
-    @Transactional
+    @Transactional // Critical for database persistence
     public EligibilityResult evaluateEligibility(Long loanRequestId) {
-        // 1. Check if already evaluated
+        // Prevent duplicate evaluations
         if (eligibilityResultRepository.findByLoanRequestId(loanRequestId).isPresent()) {
             throw new BadRequestException("Eligibility already evaluated");
         }
 
-        // 2. Fetch dependencies
         LoanRequest request = loanRequestRepository.findById(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+        
         FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found for user"));
+                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
 
         EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(request);
 
-        // 3. Business Rules Logic
+        // Logic: DTI and Credit Score rules
         double monthlyIncome = profile.getMonthlyIncome();
-        double currentExpenses = profile.getMonthlyExpenses() + profile.getExistingLoanEmi();
-        double dti = (currentExpenses / monthlyIncome) * 100;
-        int creditScore = profile.getCreditScore();
-
-        // 4. Determine Risk Level
-        if (creditScore >= 750) result.setRiskLevel("LOW");
-        else if (creditScore >= 650) result.setRiskLevel("MEDIUM");
-        else result.setRiskLevel("HIGH");
-
-        // 5. Calculate Max Amount & Eligibility
-        double maxAllowedDti = 50.0; // Rule: Expenses shouldn't exceed 50% of income
-        if (dti > maxAllowedDti || creditScore < 600) {
+        double dti = ((profile.getMonthlyExpenses() + profile.getExistingLoanEmi()) / monthlyIncome) * 100;
+        
+        if (profile.getCreditScore() < 600 || dti > 50) {
             result.setIsEligible(false);
-            result.setRejectionReason(dti > maxAllowedDti ? "DTI too high" : "Credit score too low");
+            result.setRejectionReason(dti > 50 ? "DTI too high" : "Credit score too low");
             result.setMaxEligibleAmount(0.0);
             result.setEstimatedEmi(0.0);
+            result.setRiskLevel("HIGH");
             request.setStatus("REJECTED");
         } else {
             result.setIsEligible(true);
-            // Example Max Amount calculation: Income * 10
-            result.setMaxEligibleAmount(monthlyIncome * 10);
-            double emi = (result.getMaxEligibleAmount() / request.getTenureMonths()) * 1.1; // Amount/tenure + 10% interest
-            result.setEstimatedEmi(emi);
+            result.setMaxEligibleAmount(monthlyIncome * 12);
+            result.setEstimatedEmi((result.getMaxEligibleAmount() / request.getTenureMonths()) * 1.1);
+            result.setRiskLevel(profile.getCreditScore() >= 750 ? "LOW" : "MEDIUM");
             request.setStatus("APPROVED");
         }
 
-        loanRequestRepository.save(request);
-        return eligibilityResultRepository.save(result);
+        loanRequestRepository.save(request); // Updates loan_requests table
+        return eligibilityResultRepository.save(result); // Saves to eligibility_results table
     }
 
     @Override
     public EligibilityResult getByLoanRequestId(Long loanRequestId) {
         return eligibilityResultRepository.findByLoanRequestId(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Result not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Eligibility result not found"));
     }
 }
