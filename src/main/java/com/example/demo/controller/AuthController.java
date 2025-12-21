@@ -4,9 +4,11 @@ import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotation.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name="User Profiles")
 public class AuthController {
     private final UserService userService;
 
