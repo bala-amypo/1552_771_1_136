@@ -2,11 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
+import com.example.demo.exception.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,13 +22,15 @@ public class AuthController {
         return new ResponseEntity<>(userService.register(user), HttpStatus.CREATED);
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    @GetMapping("/user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getById(id));
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        User user = userService.findByEmail(loginRequest.getEmail());
+        
+        // Simple password check (since security is removed)
+        if (user.getPassword().equals(loginRequest.getPassword())) {
+            return ResponseEntity.ok(user);
+        } else {
+            throw new BadRequestException("Invalid credentials");
+        }
     }
 }
