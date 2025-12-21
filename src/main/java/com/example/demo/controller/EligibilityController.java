@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/eligibility")
 public class EligibilityController {
+
     private final LoanEligibilityService eligibilityService;
 
     public EligibilityController(LoanEligibilityService eligibilityService) {
@@ -16,11 +17,13 @@ public class EligibilityController {
 
     @PostMapping("/evaluate/{loanRequestId}")
     public ResponseEntity<EligibilityResult> evaluate(@PathVariable Long loanRequestId) {
+        // Runs the eligibility evaluation logic
         return ResponseEntity.ok(eligibilityService.evaluateEligibility(loanRequestId));
     }
 
     @GetMapping("/result/{loanRequestId}")
     public ResponseEntity<EligibilityResult> getResult(@PathVariable Long loanRequestId) {
+        // Retrieves the evaluation result
         return ResponseEntity.ok(eligibilityService.getByLoanRequestId(loanRequestId));
     }
 }
