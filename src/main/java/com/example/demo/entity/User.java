@@ -26,11 +26,11 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
-    // Constructors
     public User() {}
+
     public User(String fullName, String email, String password, String role) {
         this.fullName = fullName;
         this.email = email;
@@ -48,4 +48,5 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }
