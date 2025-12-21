@@ -11,7 +11,7 @@ public class LoanRequest {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false) // Links to the user table
     private User user;
 
     @Column(name = "requested_amount", nullable = false)
@@ -23,19 +23,17 @@ public class LoanRequest {
     private String purpose;
 
     @Column(nullable = false)
-    private String status = "PENDING";
+    private String status = "PENDING"; // Default status
 
     @Column(name = "applied_at")
     private LocalDateTime appliedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.appliedAt = LocalDateTime.now();
-        if (this.status == null) {
-            this.status = "PENDING";
-        }
+        this.appliedAt = LocalDateTime.now(); // Auto-populated
     }
 
+    // Default Constructor
     public LoanRequest() {}
 
     // Getters and Setters
@@ -50,5 +48,4 @@ public class LoanRequest {
     public void setPurpose(String purpose) { this.purpose = purpose; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-    public LocalDateTime getAppliedAt() { return appliedAt; }
 }

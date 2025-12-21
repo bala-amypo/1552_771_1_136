@@ -8,6 +8,7 @@ import com.example.demo.service.LoanRequestService;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -16,30 +17,26 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     private final LoanRequestRepository loanRequestRepository;
     private final UserRepository userRepository;
 
-    // Constructor Injection only
+    // Constructor injection as per architecture rules
     public LoanRequestServiceImpl(LoanRequestRepository loanRequestRepository, UserRepository userRepository) {
         this.loanRequestRepository = loanRequestRepository;
         this.userRepository = userRepository;
     }
 
     @Override
+    @Transactional
     public LoanRequest submitRequest(LoanRequest request) {
-        // Validation: requestedAmount must be > 0
+        // Validation logic
         if (request.getRequestedAmount() == null || request.getRequestedAmount() <= 0) {
             throw new BadRequestException("Requested amount must be > 0");
         }
-        
-        // Validation: tenureMonths must be > 0
-        if (request.getTenureMonths() == null || request.getTenureMonths() <= 0) {
-            throw new BadRequestException("tenureMonths must be > 0");
-        }
 
-        // Ensure user exists before saving
+        // Must fetch the existing user to avoid "No Content" or null user_id in DB
         User user = userRepository.findById(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
-        request.setUser(user);
-        return loanRequestRepository.save(request); // Persists to database
+        request.setUser(user); // Attaches the database user to the request
+        return loanRequestRepository.save(request); // This saves to SQL
     }
 
     @Override
