@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Auth", description = "User Registration and Authentication")
@@ -14,36 +16,51 @@ public class AuthController {
 
     private final UserService userService;
 
-    // Constructor Injection
+    // Constructor Injection as required by project rules
     public AuthController(UserService userService) {
         this.userService = userService;
     }
 
     /**
-     * Registers a new user.
-     * Prefix: /auth/register
+     * POST /register – Registers a new user
+     * Validates that the email is unique via the service layer.
      */
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) {
-        // Business logic handles duplicate email validation
         return ResponseEntity.ok(userService.register(user));
     }
 
     /**
-     * Authenticates user.
-     * Prefix: /auth/login
-     * Note: Per your request to exclude JWT, this returns the User entity on success.
+     * POST /login – Authenticates user
+     * Returns the User object if credentials are valid.
+     * Note: Per requirements, JWT is excluded, returning Entity directly.
      */
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody User loginRequest) {
-        // Fetch user by email
+        // Fetch user by email; throws ResourceNotFoundException if missing
         User user = userService.findByEmail(loginRequest.getEmail());
         
-        // Simple password check
+        // Manual password verification
         if (!user.getPassword().equals(loginRequest.getPassword())) {
             throw new BadRequestException("Invalid credentials");
         }
         
         return ResponseEntity.ok(user);
+    }
+
+    /**
+     * GET /{id} – Helper endpoint to retrieve user by ID.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getById(id));
+    }
+
+    /**
+     * GET /users – Helper endpoint to list all users.
+     */
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }
