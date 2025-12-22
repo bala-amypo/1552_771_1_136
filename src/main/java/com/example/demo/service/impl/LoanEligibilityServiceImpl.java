@@ -39,7 +39,7 @@ public class LoanEligibilityServiceImpl implements LoanEligibilityService {
         EligibilityResult result = new EligibilityResult();
         result.setLoanRequest(request);
 
-        // Rules: DTI and Credit Score
+        
         double dti = ((profile.getMonthlyExpenses() + profile.getExistingLoanEmi()) / profile.getMonthlyIncome()) * 100;
         int score = profile.getCreditScore();
 

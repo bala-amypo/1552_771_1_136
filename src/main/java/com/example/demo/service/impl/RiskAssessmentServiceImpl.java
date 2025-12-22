@@ -27,7 +27,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
     @Override
     @Transactional
     public RiskAssessmentLog assessRisk(Long loanRequestId) {
-        // Rule: Throw exception if log already exists
+     
         if (!riskRepository.findByLoanRequestId(loanRequestId).isEmpty()) {
             throw new BadRequestException("Risk already assessed for this request");
         }
@@ -38,11 +38,11 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
         FinancialProfile profile = profileRepository.findByUserId(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Financial Profile not found"));
 
-        // Calculation: Total Monthly Obligations / Monthly Income
+      
         double totalObligations = profile.getMonthlyExpenses() + profile.getExistingLoanEmi();
         double dtiRatio = (totalObligations / profile.getMonthlyIncome()) * 100;
 
-        // Perform "Credit Check" status assignment
+        
         String status = (dtiRatio > 50 || profile.getCreditScore() < 600) ? "REJECTED" : "APPROVED";
         if (dtiRatio > 40 && dtiRatio <= 50) status = "PENDING_REVIEW";
 

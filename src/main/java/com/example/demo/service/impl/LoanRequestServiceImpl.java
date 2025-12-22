@@ -17,21 +17,21 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     private final LoanRequestRepository loanRequestRepository;
     private final UserRepository userRepository;
 
-    // Constructor Injection
+    
     public LoanRequestServiceImpl(LoanRequestRepository loanRequestRepository, UserRepository userRepository) {
         this.loanRequestRepository = loanRequestRepository;
         this.userRepository = userRepository;
     }
 
     @Override
-    @Transactional // Ensures data is saved to SQL
+    @Transactional 
     public LoanRequest submitRequest(LoanRequest request) {
-        // Validation: amount must be > 0
+       
         if (request.getRequestedAmount() == null || request.getRequestedAmount() <= 0) {
             throw new BadRequestException("Requested amount must be > 0");
         }
 
-        // Fetch User to link the foreign key
+       
         User user = userRepository.findById(request.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
