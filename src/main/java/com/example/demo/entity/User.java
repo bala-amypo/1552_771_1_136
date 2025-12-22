@@ -38,7 +38,6 @@ public class User {
         this.role = role;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }

@@ -30,17 +30,14 @@ public class RiskAssessmentLog {
         this.timestamp = LocalDateTime.now();
     }
 
-    // No-args constructor
     public RiskAssessmentLog() {}
 
-    // Core fields constructor
     public RiskAssessmentLog(Long loanRequestId, Double dtiRatio, String creditCheckStatus) {
         this.loanRequestId = loanRequestId;
         this.dtiRatio = dtiRatio;
         this.creditCheckStatus = creditCheckStatus;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

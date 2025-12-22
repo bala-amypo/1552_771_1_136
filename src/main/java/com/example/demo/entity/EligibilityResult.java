@@ -40,10 +40,8 @@ public class EligibilityResult {
         this.calculatedAt = LocalDateTime.now();
     }
 
-    // Default Constructor
     public EligibilityResult() {}
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

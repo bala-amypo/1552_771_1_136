@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "financial_profile") // Matches your screenshot
+@Table(name = "financial_profile") 
 public class FinancialProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +38,8 @@ public class FinancialProfile {
         this.lastUpdatedAt = LocalDateTime.now();
     }
 
-    // Default Constructor
     public FinancialProfile() {}
 
-    // Getters and Setters (Omitted for brevity, ensure all are present)
     public Long getId() { return id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

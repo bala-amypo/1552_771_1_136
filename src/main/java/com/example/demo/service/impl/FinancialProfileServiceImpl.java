@@ -24,15 +24,15 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
     @Override
     @Transactional
     public FinancialProfile createOrUpdate(FinancialProfile profile) {
-        // Validation per requirements
+       
         if (profile.getMonthlyIncome() <= 0) throw new BadRequestException("monthlyIncome must be > 0");
         if (profile.getCreditScore() < 300 || profile.getCreditScore() > 900) throw new BadRequestException("creditScore must be 300-900");
 
-        // Fetch User to ensure they exist in DB
+     
         User user = userRepository.findById(profile.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Check if profile exists for this user
+        
         return profileRepository.findByUserId(user.getId())
             .map(existing -> {
                 existing.setMonthlyIncome(profile.getMonthlyIncome());

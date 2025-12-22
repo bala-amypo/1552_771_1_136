@@ -12,27 +12,26 @@ public class LoanRequestController {
 
     private final LoanRequestService loanRequestService;
 
-    // Constructor Injection
     public LoanRequestController(LoanRequestService loanRequestService) {
         this.loanRequestService = loanRequestService;
     }
 
-    @PostMapping("/") // Submits new loan request
+    @PostMapping("/") 
     public ResponseEntity<LoanRequest> submit(@RequestBody LoanRequest request) {
         return ResponseEntity.ok(loanRequestService.submitRequest(request));
     }
 
-    @GetMapping("/user/{userId}") // Gets requests for user
+    @GetMapping("/user/{userId}") 
     public ResponseEntity<List<LoanRequest>> getByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(loanRequestService.getRequestsByUser(userId));
     }
 
-    @GetMapping("/{id}") // Retrieves specific request
+    @GetMapping("/{id}") 
     public ResponseEntity<LoanRequest> getById(@PathVariable Long id) {
         return ResponseEntity.ok(loanRequestService.getById(id));
     }
 
-    @GetMapping("/") // Lists all requests
+    @GetMapping("/") 
     public ResponseEntity<List<LoanRequest>> getAll() {
         return ResponseEntity.ok(loanRequestService.getAllRequests());
     }

@@ -13,7 +13,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles ResourceNotFoundException (404)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
@@ -22,7 +21,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    // Handles BadRequestException (400)
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> handleBadRequestException(BadRequestException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
@@ -31,7 +29,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    // Handles all other unexpected exceptions (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();

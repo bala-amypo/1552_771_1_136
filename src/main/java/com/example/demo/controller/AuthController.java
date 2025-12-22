@@ -26,7 +26,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
         User user = userService.findByEmail(loginRequest.getEmail());
         
-        // Simple password check (since security is removed)
+      
         if (user.getPassword().equals(loginRequest.getPassword())) {
             return ResponseEntity.ok(user);
         } else {
