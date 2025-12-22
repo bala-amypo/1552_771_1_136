@@ -56,3 +56,4 @@ public class FinancialProfile {
     public Double getSavingsBalance() { return savingsBalance; }
     public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
 }
+

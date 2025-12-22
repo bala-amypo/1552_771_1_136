@@ -54,3 +54,4 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
     }
 }
+

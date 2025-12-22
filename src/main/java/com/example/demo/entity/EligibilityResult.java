@@ -108,3 +108,4 @@ public class EligibilityResult {
         this.calculatedAt = calculatedAt;
     }
 }
+

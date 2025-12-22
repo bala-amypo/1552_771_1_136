@@ -26,3 +26,4 @@ public class RiskLogController {
         return ResponseEntity.ok(riskService.getByLoanRequestId(loanRequestId));
     }
 }
+

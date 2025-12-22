@@ -87,3 +87,4 @@ public class LoanRequest {
         this.appliedAt = appliedAt;
     }
 }
+
