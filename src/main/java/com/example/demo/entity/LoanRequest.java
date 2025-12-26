@@ -22,6 +22,8 @@ public class LoanRequest {
     private String status = Status.PENDING.name();
 
     private LocalDateTime submittedAt;
+public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
+
 
     @PrePersist
     void onCreate() {

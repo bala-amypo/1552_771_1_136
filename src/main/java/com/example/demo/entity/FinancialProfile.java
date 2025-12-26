@@ -19,7 +19,9 @@ public class FinancialProfile {
     private Integer creditScore;
     private Double savingsBalance;
 
-    private LocalDateTime lastUpdatedAt;
+   private LocalDateTime lastUpdatedAt;
+public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; }
+
 
     @PrePersist
     @PreUpdate
