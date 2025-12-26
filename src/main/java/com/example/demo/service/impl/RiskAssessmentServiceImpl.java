@@ -17,7 +17,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
     public RiskAssessmentServiceImpl(
             LoanRequestRepository loanRequestRepository,
             FinancialProfileRepository profileRepository,
-            RiskAssessmentRepository riskRepository) {
+            RiskAssessmentLogRepository riskRepository) {
         this.loanRequestRepository = loanRequestRepository;
         this.profileRepository = profileRepository;
         this.riskRepository = riskRepository;
@@ -37,7 +37,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
                 .findByUserId(loanRequest.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        RiskAssessment risk = new RiskAssessment();
+        RiskAssessmentLog risk = new RiskAssessment();
         risk.setLoanRequestId(loanRequestId);
 
         double income = profile.getMonthlyIncome() == 0 ? 1 : profile.getMonthlyIncome();
@@ -51,7 +51,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
     }
 
     @Override
-    public RiskAssessment getByLoanRequestId(Long loanRequestId) {
+    public RiskAssessmentLog getByLoanRequestId(Long loanRequestId) {
         return riskRepository.findByLoanRequestId(loanRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
