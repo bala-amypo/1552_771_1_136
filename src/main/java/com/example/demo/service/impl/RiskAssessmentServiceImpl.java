@@ -28,7 +28,10 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     @Override
     public RiskAssessmentLog assessRisk(Long loanRequestId) {
-        if (raRepo.findByLoanRequestId(loanRequestId).isPresent()) {
+        if (!lrRepo.findById(loanRequestId).isPresent()) {
+            throw new ResourceNotFoundException("Loan request not found");
+        }
+        if (raRepo.findByLoanRequestId(loanRequestId).size() > 0) {
             throw new BadRequestException("Risk already assessed");
         }
 
@@ -53,7 +56,8 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     @Override
     public RiskAssessmentLog getByLoanRequestId(Long loanRequestId) {
-        return raRepo.findByLoanRequestId(loanRequestId)
+        return raRepo.findByLoanRequestId(loanRequestId).stream()
+                .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Risk assessment not found"));
     }
 }
