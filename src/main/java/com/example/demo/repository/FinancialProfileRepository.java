@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface FinancialProfileRepository
-        extends JpaRepository<FinancialProfile, Long> {
-
+public interface FinancialProfileRepository extends JpaRepository<FinancialProfile, Long> {
     Optional<FinancialProfile> findByUserId(Long userId);
 }
