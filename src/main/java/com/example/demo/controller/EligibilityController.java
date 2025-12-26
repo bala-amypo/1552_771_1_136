@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.EligibilityResult;
-import com.example.demo.service.EligibilityService;
+import com.example.demo.service.LoanEligibilityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.RiskAssessment;
+import com.example.demo.entity.RiskAssessmentLog;
 import com.example.demo.service.RiskAssessmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
