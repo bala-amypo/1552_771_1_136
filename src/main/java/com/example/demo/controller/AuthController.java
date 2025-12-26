@@ -1,38 +1,35 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.security.JwtUtil;
-import com.example.demo.service.impl.UserServiceImpl;
+import com.example.demo.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-
+@RestController
+@RequestMapping("/auth")
 public class AuthController {
 
-    private final UserServiceImpl userService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository repo;
+    private final AuthService authService;
 
-    public AuthController(UserServiceImpl u, JwtUtil j, UserRepository r) {
-        this.userService = u;
-        this.jwtUtil = j;
-        this.repo = r;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-    public ResponseEntity<AuthResponse> login(AuthRequest req) {
-        User u = repo.findByEmail(req.getEmail()).orElseThrow();
-        if (!new BCryptPasswordEncoder().matches(req.getPassword(), u.getPassword()))
-            throw new RuntimeException("Invalid");
+    // POST /auth/register
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
+        User user = authService.register(request);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("email", u.getEmail());
-        claims.put("role", u.getRole());
-        claims.put("userId", u.getId());
-
-        String token = jwtUtil.generateToken(claims, u.getEmail());
-        return ResponseEntity.ok(new AuthResponse(token, u.getEmail()));
+    // POST /auth/login
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -1,7 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.LoanRequest;
+import com.example.demo.dto.LoanRequestDto;
 import com.example.demo.service.LoanRequestService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,24 +18,30 @@ public class LoanRequestController {
         this.service = service;
     }
 
+    // POST /api/loan-requests
     @PostMapping
-    public ResponseEntity<LoanRequest> submit(@RequestBody LoanRequest request) {
-        return ResponseEntity.ok(service.submitRequest(request));
+    public ResponseEntity<LoanRequestDto> submit(
+            @RequestBody LoanRequestDto dto) {
+        return new ResponseEntity<>(service.submit(dto), HttpStatus.CREATED);
     }
 
+    // GET /api/loan-requests/user/{userId}
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LoanRequest>> getByUser(
+    public ResponseEntity<List<LoanRequestDto>> getByUser(
             @PathVariable Long userId) {
-        return ResponseEntity.ok(service.getRequestsByUser(userId));
+        return ResponseEntity.ok(service.getByUserId(userId));
     }
 
+    // GET /api/loan-requests/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<LoanRequest> getById(@PathVariable Long id) {
+    public ResponseEntity<LoanRequestDto> getById(
+            @PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
+    // GET /api/loan-requests
     @GetMapping
-    public ResponseEntity<List<LoanRequest>> getAll() {
+    public ResponseEntity<List<LoanRequestDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 }
