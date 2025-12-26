@@ -12,19 +12,17 @@ public class JwtFilter implements Filter {
         this.jwtUtil = jwtUtil;
     }
 
-    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
 
-        HttpServletRequest request = (HttpServletRequest) req;
-        String header = request.getHeader("Authorization");
+        HttpServletRequest r = (HttpServletRequest) req;
+        String auth = r.getHeader("Authorization");
 
-        if (header != null && header.startsWith("Bearer ")) {
+        if (auth != null && auth.startsWith("Bearer ")) {
             try {
-                jwtUtil.getAllClaims(header.substring(7));
+                jwtUtil.getAllClaims(auth.substring(7));
             } catch (Exception ignored) {}
         }
-
         chain.doFilter(req, res);
     }
 }
