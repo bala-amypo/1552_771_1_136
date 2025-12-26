@@ -1,12 +1,9 @@
+// src/main/java/com/example/demo/service/RiskAssessmentService.java
 package com.example.demo.service;
 
-import com.example.demo.entity.RiskAssessmentLog;
-
-import java.util.List;
+import com.example.demo.entity.RiskAssessment;
 
 public interface RiskAssessmentService {
-
-    List<RiskAssessmentLog> getByLoanRequestId(Long loanRequestId);
-
-    RiskAssessmentLog save(RiskAssessmentLog log);
+    RiskAssessment assessRisk(Long loanRequestId);
+    RiskAssessment getByLoanRequestId(Long loanRequestId);
 }

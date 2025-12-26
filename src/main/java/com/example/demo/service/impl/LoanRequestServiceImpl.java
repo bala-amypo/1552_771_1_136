@@ -1,3 +1,4 @@
+// src/main/java/com/example/demo/service/impl/LoanRequestServiceImpl.java
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.LoanRequest;
@@ -8,54 +9,50 @@ import com.example.demo.repository.LoanRequestRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.LoanRequestService;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class LoanRequestServiceImpl implements LoanRequestService {
+    private final LoanRequestRepository lrRepo;
+    private final UserRepository userRepo;
 
-    private final LoanRequestRepository loanRequestRepository;
-    private final UserRepository userRepository;
-
-    public LoanRequestServiceImpl(LoanRequestRepository loanRequestRepository,
-                                  UserRepository userRepository) {
-        this.loanRequestRepository = loanRequestRepository;
-        this.userRepository = userRepository;
+    public LoanRequestServiceImpl(LoanRequestRepository lrRepo, UserRepository userRepo) {
+        this.lrRepo = lrRepo; this.userRepo = userRepo;
     }
 
     @Override
     public LoanRequest submitRequest(LoanRequest request) {
-        Long userId = request.getUser().getId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Objects.requireNonNull(lrRepo, "LoanRequestRepository required");
+        Objects.requireNonNull(userRepo, "UserRepository required");
+        if (request.getUser() == null || request.getUser().getId() == null)
+            throw new ResourceNotFoundException("User not found");
+        User u = userRepo.findById(request.getUser().getId())
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (request.getRequestedAmount() == null || request.getRequestedAmount() <= 0.0)
+            throw new BadRequestException("Requested amount invalid");
+        if (request.getTenureMonths() == null || request.getTenureMonths() <= 0)
+            throw new BadRequestException("tenureMonths must be > 0");
 
-        if (request.getRequestedAmount() <= 0) {
-            throw new BadRequestException("Requested amount");
-        }
-
-        if (request.getTenureMonths() <= 0) {
-            throw new BadRequestException("Tenure must be > 0");
-        }
-
-        request.setUser(user);
+        request.setUser(u);
         request.setStatus(LoanRequest.Status.PENDING.name());
-        request.setSubmittedAt(LocalDateTime.now());
-
-        return loanRequestRepository.save(request);
-    }
-
-    @Override
-    public LoanRequest getById(Long id) {
-        return loanRequestRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+        return lrRepo.save(request);
     }
 
     @Override
     public List<LoanRequest> getRequestsByUser(Long userId) {
-        return loanRequestRepository.findByUserId(userId);
+        Objects.requireNonNull(lrRepo, "LoanRequestRepository required");
+        return lrRepo.findByUserId(userId);
+    }
+
+    @Override
+    public LoanRequest getById(Long id) {
+        Objects.requireNonNull(lrRepo, "LoanRequestRepository required");
+        return lrRepo.findById(id).orElse(null);
     }
 
     @Override
     public List<LoanRequest> getAllRequests() {
-        return loanRequestRepository.findAll();
+        Objects.requireNonNull(lrRepo, "LoanRequestRepository required");
+        return lrRepo.findAll();
     }
 }
