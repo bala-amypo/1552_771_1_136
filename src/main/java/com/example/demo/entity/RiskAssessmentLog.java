@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-public class RiskAssessment {
+public class RiskAssessmentLog {
 
     @Id
     @GeneratedValue

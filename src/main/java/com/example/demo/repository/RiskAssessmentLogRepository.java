@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RiskAssessmentRepository
+public interface RiskAssessmentLogRepository
         extends JpaRepository<RiskAssessment, Long> {
 
     Optional<RiskAssessment> findByLoanRequestId(Long loanRequestId);
