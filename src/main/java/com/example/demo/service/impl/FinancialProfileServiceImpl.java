@@ -1,7 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
-import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.*;
 import com.example.demo.repository.*;
 
 public class FinancialProfileServiceImpl {
@@ -9,27 +9,26 @@ public class FinancialProfileServiceImpl {
     private final FinancialProfileRepository repo;
     private final UserRepository userRepo;
 
-    public FinancialProfileServiceImpl(FinancialProfileRepository r, UserRepository u) {
-        this.repo = r;
-        this.userRepo = u;
+    public FinancialProfileServiceImpl(FinancialProfileRepository repo, UserRepository userRepo) {
+        this.repo = repo;
+        this.userRepo = userRepo;
     }
 
     public FinancialProfile createOrUpdate(FinancialProfile fp) {
         if (fp.getCreditScore() < 300 || fp.getCreditScore() > 900)
-            throw new BadRequestException("Invalid credit score");
+            throw new BadRequestException("creditScore");
 
-        Long uid = fp.getUser().getId();
-        userRepo.findById(uid).orElseThrow();
+        Long userId = fp.getUser().getId();
+        FinancialProfile existing = repo.findByUserId(userId).orElse(null);
 
-        return repo.findByUserId(uid)
-                .map(existing -> {
-                    fp.setId(existing.getId());
-                    return repo.save(fp);
-                })
-                .orElseGet(() -> repo.save(fp));
+        if (existing != null) {
+            fp.setId(existing.getId());
+        }
+        return repo.save(fp);
     }
 
-    public FinancialProfile getByUserId(Long id) {
-        return repo.findByUserId(id).orElse(null);
+    public FinancialProfile getByUserId(Long userId) {
+        return repo.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
     }
 }

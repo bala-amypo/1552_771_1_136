@@ -7,31 +7,31 @@ import com.example.demo.repository.*;
 public class EligibilityServiceImpl {
 
     private final LoanRequestRepository loanRepo;
-    private final FinancialProfileRepository fpRepo;
-    private final EligibilityResultRepository erRepo;
+    private final FinancialProfileRepository profileRepo;
+    private final EligibilityResultRepository resultRepo;
 
-    public EligibilityServiceImpl(LoanRequestRepository l, FinancialProfileRepository f, EligibilityResultRepository e) {
-        this.loanRepo = l;
-        this.fpRepo = f;
-        this.erRepo = e;
+    public EligibilityServiceImpl(
+            LoanRequestRepository loanRepo,
+            FinancialProfileRepository profileRepo,
+            EligibilityResultRepository resultRepo) {
+        this.loanRepo = loanRepo;
+        this.profileRepo = profileRepo;
+        this.resultRepo = resultRepo;
     }
 
-    public EligibilityResult evaluateEligibility(Long loanId) {
-        if (erRepo.findByLoanRequestId(loanId).isPresent())
-            throw new BadRequestException("Already evaluated");
+    public EligibilityResult evaluateEligibility(Long loanRequestId) {
+        if (resultRepo.findByLoanRequestId(loanRequestId).isPresent())
+            throw new BadRequestException("Eligibility already evaluated");
 
-        LoanRequest lr = loanRepo.findById(loanId).orElseThrow();
-        FinancialProfile fp = fpRepo.findByUserId(lr.getUser().getId()).orElseThrow();
+        LoanRequest lr = loanRepo.findById(loanRequestId).orElseThrow();
+        FinancialProfile fp = profileRepo.findByUserId(lr.getUser().getId()).orElseThrow();
 
         EligibilityResult er = new EligibilityResult();
-        er.setLoanRequest(lr);
-        er.setEligible(true);
-        er.setMaxEligibleAmount(fp.getMonthlyIncome() * 10);
-
-        return erRepo.save(er);
+        er.setMaxEligibleAmount(Math.max(0, fp.getMonthlyIncome() * 10));
+        return resultRepo.save(er);
     }
 
     public EligibilityResult getByLoanRequestId(Long id) {
-        return erRepo.findByLoanRequestId(id).orElse(null);
+        return resultRepo.findByLoanRequestId(id).orElse(null);
     }
 }

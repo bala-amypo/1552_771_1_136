@@ -3,10 +3,9 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.User;
 import com.example.demo.exception.*;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl {
 
     private final UserRepository repo;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -15,13 +14,13 @@ public class UserServiceImpl implements UserService {
         this.repo = repo;
     }
 
-    public User register(User u) {
-        if (repo.findByEmail(u.getEmail()).isPresent())
-            throw new BadRequestException("Email exists");
+    public User register(User user) {
+        if (repo.findByEmail(user.getEmail()).isPresent())
+            throw new BadRequestException("Email already in use");
 
-        u.setPassword(encoder.encode(u.getPassword()));
-        u.setRole(User.Role.CUSTOMER.name());
-        return repo.save(u);
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setRole(User.Role.CUSTOMER.name());
+        return repo.save(user);
     }
 
     public User getById(Long id) {

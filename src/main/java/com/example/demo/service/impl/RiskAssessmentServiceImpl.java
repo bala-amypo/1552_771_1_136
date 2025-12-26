@@ -7,34 +7,34 @@ import com.example.demo.repository.*;
 public class RiskAssessmentServiceImpl {
 
     private final LoanRequestRepository loanRepo;
-    private final FinancialProfileRepository fpRepo;
-    private final RiskAssessmentRepository raRepo;
+    private final FinancialProfileRepository profileRepo;
+    private final RiskAssessmentRepository riskRepo;
 
-    public RiskAssessmentServiceImpl(LoanRequestRepository l, FinancialProfileRepository f, RiskAssessmentRepository r) {
-        this.loanRepo = l;
-        this.fpRepo = f;
-        this.raRepo = r;
+    public RiskAssessmentServiceImpl(
+            LoanRequestRepository loanRepo,
+            FinancialProfileRepository profileRepo,
+            RiskAssessmentRepository riskRepo) {
+        this.loanRepo = loanRepo;
+        this.profileRepo = profileRepo;
+        this.riskRepo = riskRepo;
     }
 
-    public RiskAssessment assessRisk(Long loanId) {
-        if (raRepo.findByLoanRequestId(loanId).isPresent())
-            throw new BadRequestException("Already assessed");
+    public RiskAssessment assessRisk(Long loanRequestId) {
+        if (riskRepo.findByLoanRequestId(loanRequestId).isPresent())
+            throw new BadRequestException("Risk already assessed");
 
-        LoanRequest lr = loanRepo.findById(loanId).orElseThrow();
-        FinancialProfile fp = fpRepo.findByUserId(lr.getUser().getId()).orElseThrow();
+        FinancialProfile fp = profileRepo.findByUserId(
+                loanRepo.findById(loanRequestId).orElseThrow().getUser().getId()
+        ).orElseThrow();
 
         RiskAssessment ra = new RiskAssessment();
-        ra.setLoanRequest(lr);
-
-        double emi = fp.getExistingLoanEmi() == null ? 0 : fp.getExistingLoanEmi();
-        double income = fp.getMonthlyIncome() == 0 ? 1 : fp.getMonthlyIncome();
-        ra.setDtiRatio(emi / income);
-        ra.setRiskScore(Math.min(100, ra.getDtiRatio() * 100));
-
-        return raRepo.save(ra);
+        double income = fp.getMonthlyIncome() == null ? 0 : fp.getMonthlyIncome();
+        ra.setDtiRatio(income == 0 ? 0 : fp.getMonthlyExpenses() / income);
+        ra.setRiskScore(50.0);
+        return riskRepo.save(ra);
     }
 
     public RiskAssessment getByLoanRequestId(Long id) {
-        return raRepo.findByLoanRequestId(id).orElse(null);
+        return riskRepo.findByLoanRequestId(id).orElse(null);
     }
 }
