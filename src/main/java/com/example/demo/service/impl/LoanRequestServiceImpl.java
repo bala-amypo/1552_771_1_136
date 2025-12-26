@@ -1,34 +1,61 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
-import com.example.demo.exception.*;
-import com.example.demo.repository.*;
+import com.example.demo.entity.LoanRequest;
+import com.example.demo.entity.User;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.LoanRequestRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.LoanRequestService;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class LoanRequestServiceImpl {
+public class LoanRequestServiceImpl implements LoanRequestService {
 
-    private final LoanRequestRepository repo;
-    private final UserRepository userRepo;
+    private final LoanRequestRepository loanRequestRepository;
+    private final UserRepository userRepository;
 
-    public LoanRequestServiceImpl(LoanRequestRepository repo, UserRepository userRepo) {
-        this.repo = repo;
-        this.userRepo = userRepo;
+    public LoanRequestServiceImpl(LoanRequestRepository loanRequestRepository,
+                                  UserRepository userRepository) {
+        this.loanRequestRepository = loanRequestRepository;
+        this.userRepository = userRepository;
     }
 
-    public LoanRequest submitRequest(LoanRequest lr) {
-        if (lr.getRequestedAmount() <= 0)
+    @Override
+    public LoanRequest submitRequest(LoanRequest request) {
+        Long userId = request.getUser().getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (request.getRequestedAmount() <= 0) {
             throw new BadRequestException("Requested amount");
+        }
 
-        lr.setStatus(LoanRequest.Status.PENDING.name());
-        return repo.save(lr);
+        if (request.getTenureMonths() <= 0) {
+            throw new BadRequestException("Tenure must be > 0");
+        }
+
+        request.setUser(user);
+        request.setStatus(LoanRequest.Status.PENDING.name());
+        request.setSubmittedAt(LocalDateTime.now());
+
+        return loanRequestRepository.save(request);
     }
 
+    @Override
     public LoanRequest getById(Long id) {
-        return repo.findById(id)
+        return loanRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
     }
 
+    @Override
     public List<LoanRequest> getRequestsByUser(Long userId) {
-        return repo.findByUserId(userId);
+        return loanRequestRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<LoanRequest> getAllRequests() {
+        return loanRequestRepository.findAll();
     }
 }
