@@ -1,8 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.LoanRequestDto;
+import com.example.demo.entity.LoanRequest;
 import com.example.demo.service.LoanRequestService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,36 +11,33 @@ import java.util.List;
 @RequestMapping("/api/loan-requests")
 public class LoanRequestController {
 
-    private final LoanRequestService service;
+    private final LoanRequestService loanRequestService;
 
-    public LoanRequestController(LoanRequestService service) {
-        this.service = service;
+    public LoanRequestController(LoanRequestService loanRequestService) {
+        this.loanRequestService = loanRequestService;
     }
 
-    // POST /api/loan-requests
-    @PostMapping
-    public ResponseEntity<LoanRequestDto> submit(
-            @RequestBody LoanRequestDto dto) {
-        return new ResponseEntity<>(service.submit(dto), HttpStatus.CREATED);
+    @PostMapping("/")
+    public ResponseEntity<LoanRequest> submitRequest(@RequestBody LoanRequest request) {
+        LoanRequest result = loanRequestService.submitRequest(request);
+        return ResponseEntity.ok(result);
     }
 
-    // GET /api/loan-requests/user/{userId}
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LoanRequestDto>> getByUser(
-            @PathVariable Long userId) {
-        return ResponseEntity.ok(service.getByUserId(userId));
+    public ResponseEntity<List<LoanRequest>> getRequestsByUser(@PathVariable Long userId) {
+        List<LoanRequest> requests = loanRequestService.getRequestsByUser(userId);
+        return ResponseEntity.ok(requests);
     }
 
-    // GET /api/loan-requests/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<LoanRequestDto> getById(
-            @PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<LoanRequest> getById(@PathVariable Long id) {
+        LoanRequest request = loanRequestService.getById(id);
+        return ResponseEntity.ok(request);
     }
 
-    // GET /api/loan-requests
-    @GetMapping
-    public ResponseEntity<List<LoanRequestDto>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    @GetMapping("/")
+    public ResponseEntity<List<LoanRequest>> getAll() {
+        List<LoanRequest> allRequests = loanRequestService.getAllRequests();
+        return ResponseEntity.ok(allRequests);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.EligibilityResultDto;
-import com.example.demo.service.EligibilityService;
+import com.example.demo.entity.EligibilityResult;
+import com.example.demo.service.LoanEligibilityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,23 +9,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/eligibility")
 public class EligibilityController {
 
-    private final EligibilityService service;
+    private final LoanEligibilityService eligibilityService;
 
-    public EligibilityController(EligibilityService service) {
-        this.service = service;
+    public EligibilityController(LoanEligibilityService eligibilityService) {
+        this.eligibilityService = eligibilityService;
     }
 
-    // POST /api/eligibility/evaluate/{loanRequestId}
     @PostMapping("/evaluate/{loanRequestId}")
-    public ResponseEntity<EligibilityResultDto> evaluate(
-            @PathVariable Long loanRequestId) {
-        return ResponseEntity.ok(service.evaluate(loanRequestId));
+    public ResponseEntity<EligibilityResult> evaluateEligibility(@PathVariable Long loanRequestId) {
+        EligibilityResult result = eligibilityService.evaluateEligibility(loanRequestId);
+        return ResponseEntity.ok(result);
     }
 
-    // GET /api/eligibility/result/{loanRequestId}
     @GetMapping("/result/{loanRequestId}")
-    public ResponseEntity<EligibilityResultDto> getResult(
-            @PathVariable Long loanRequestId) {
-        return ResponseEntity.ok(service.getResult(loanRequestId));
+    public ResponseEntity<EligibilityResult> getEligibilityResult(@PathVariable Long loanRequestId) {
+        EligibilityResult result = eligibilityService.getByLoanRequestId(loanRequestId);
+        return ResponseEntity.ok(result);
     }
 }

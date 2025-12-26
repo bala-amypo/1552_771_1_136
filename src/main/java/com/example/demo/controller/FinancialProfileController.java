@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.FinancialProfileDto;
+import com.example.demo.entity.FinancialProfile;
 import com.example.demo.service.FinancialProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,23 +9,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/financial-profiles")
 public class FinancialProfileController {
 
-    private final FinancialProfileService service;
+    private final FinancialProfileService financialProfileService;
 
-    public FinancialProfileController(FinancialProfileService service) {
-        this.service = service;
+    public FinancialProfileController(FinancialProfileService financialProfileService) {
+        this.financialProfileService = financialProfileService;
     }
 
-    // POST /api/financial-profiles
-    @PostMapping
-    public ResponseEntity<FinancialProfileDto> createOrUpdate(
-            @RequestBody FinancialProfileDto dto) {
-        return ResponseEntity.ok(service.createOrUpdate(dto));
+    @PostMapping("/")
+    public ResponseEntity<FinancialProfile> createOrUpdate(@RequestBody FinancialProfile profile) {
+        FinancialProfile result = financialProfileService.createOrUpdate(profile);
+        return ResponseEntity.ok(result);
     }
 
-    // GET /api/financial-profiles/user/{userId}
     @GetMapping("/user/{userId}")
-    public ResponseEntity<FinancialProfileDto> getByUserId(
-            @PathVariable Long userId) {
-        return ResponseEntity.ok(service.getByUserId(userId));
+    public ResponseEntity<FinancialProfile> getByUser(@PathVariable Long userId) {
+        FinancialProfile profile = financialProfileService.getByUserId(userId);
+        return ResponseEntity.ok(profile);
     }
 }

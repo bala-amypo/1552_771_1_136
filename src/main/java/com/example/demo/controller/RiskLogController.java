@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.RiskLogDto;
-import com.example.demo.service.RiskLogService;
+import com.example.demo.entity.RiskAssessmentLog;
+import com.example.demo.service.RiskAssessmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,16 +11,15 @@ import java.util.List;
 @RequestMapping("/api/risk-logs")
 public class RiskLogController {
 
-    private final RiskLogService service;
+    private final RiskAssessmentService riskService;
 
-    public RiskLogController(RiskLogService service) {
-        this.service = service;
+    public RiskLogController(RiskAssessmentService riskService) {
+        this.riskService = riskService;
     }
 
-    // GET /api/risk-logs/{loanRequestId}
     @GetMapping("/{loanRequestId}")
-    public ResponseEntity<List<RiskLogDto>> getRiskLogs(
-            @PathVariable Long loanRequestId) {
-        return ResponseEntity.ok(service.getByLoanRequestId(loanRequestId));
+    public ResponseEntity<List<RiskAssessmentLog>> getLogsByLoanRequest(@PathVariable Long loanRequestId) {
+        List<RiskAssessmentLog> logs = riskService.getByLoanRequestId(loanRequestId);
+        return ResponseEntity.ok(logs);
     }
 }
