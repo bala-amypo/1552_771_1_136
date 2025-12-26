@@ -4,7 +4,7 @@ import com.example.demo.entity.*;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.*;
-import com.example.demo.service.EligibilityService;
+import com.example.demo.service.LoanEligibilityService;
 import org.springframework.stereotype.Service;
 
 @Service   // ✅ ADD THIS
