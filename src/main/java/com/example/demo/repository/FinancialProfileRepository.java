@@ -7,10 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface FinancialProfileRepository extends JpaRepository<FinancialProfile, Long> {
-    /**
-     * Finds the financial profile associated with a specific user ID.
-     * Enforces the one-profile-per-user rule[cite: 4, 75].
-     */
+public interface FinancialProfileRepository
+        extends JpaRepository<FinancialProfile, Long> {
+
     Optional<FinancialProfile> findByUserId(Long userId);
 }
