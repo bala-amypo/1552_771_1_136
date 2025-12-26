@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "loan_request")
 public class LoanRequest {
 
     public enum Status { PENDING, APPROVED, REJECTED }
@@ -18,14 +17,18 @@ public class LoanRequest {
 
     private Double requestedAmount;
     private Integer tenureMonths;
-    private String status;
+    private String purpose;
+
+    private String status = Status.PENDING.name();
+
     private LocalDateTime submittedAt;
 
     @PrePersist
-    public void pre() {
-        this.status = Status.PENDING.name();
-        this.submittedAt = LocalDateTime.now();
+    void onCreate() {
+        submittedAt = LocalDateTime.now();
     }
+
+    public LoanRequest() {}
 
     // getters & setters
     public Long getId() { return id; }
@@ -41,5 +44,7 @@ public class LoanRequest {
     public void setTenureMonths(Integer tenureMonths) { this.tenureMonths = tenureMonths; }
 
     public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     public LocalDateTime getSubmittedAt() { return submittedAt; }
 }

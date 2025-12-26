@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "financial_profile")
 public class FinancialProfile {
 
     @Id
@@ -12,7 +11,6 @@ public class FinancialProfile {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     private Double monthlyIncome;
@@ -25,9 +23,11 @@ public class FinancialProfile {
 
     @PrePersist
     @PreUpdate
-    public void pre() {
-        this.lastUpdatedAt = LocalDateTime.now();
+    void updateTime() {
+        lastUpdatedAt = LocalDateTime.now();
     }
+
+    public FinancialProfile() {}
 
     // getters & setters
     public Long getId() { return id; }

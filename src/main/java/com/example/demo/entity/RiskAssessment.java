@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class RiskAssessment {
@@ -9,22 +10,24 @@ public class RiskAssessment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private LoanRequest loanRequest;
-
-    private Double riskScore;
+    private Long loanRequestId;
     private Double dtiRatio;
+    private Double riskScore;
+    private LocalDateTime timestamp;
 
-    // getters & setters
+    @PrePersist
+    void onCreate() {
+        timestamp = LocalDateTime.now();
+    }
+
+    public RiskAssessment() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public LoanRequest getLoanRequest() { return loanRequest; }
-    public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
+    public Double getDtiRatio() { return dtiRatio; }
+    public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
 
     public Double getRiskScore() { return riskScore; }
     public void setRiskScore(Double riskScore) { this.riskScore = riskScore; }
-
-    public Double getDtiRatio() { return dtiRatio; }
-    public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
 }

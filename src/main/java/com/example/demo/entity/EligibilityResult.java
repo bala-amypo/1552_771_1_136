@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class EligibilityResult {
@@ -12,18 +13,24 @@ public class EligibilityResult {
     @OneToOne
     private LoanRequest loanRequest;
 
-    private Boolean eligible;
+    private Boolean isEligible;
     private Double maxEligibleAmount;
+    private Double estimatedEmi;
+    private String riskLevel;
+    private String rejectionReason;
+
+    private LocalDateTime calculatedAt;
+
+    @PrePersist
+    void onCreate() {
+        calculatedAt = LocalDateTime.now();
+    }
+
+    public EligibilityResult() {}
 
     // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public LoanRequest getLoanRequest() { return loanRequest; }
-    public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
-
-    public Boolean getEligible() { return eligible; }
-    public void setEligible(Boolean eligible) { this.eligible = eligible; }
 
     public Double getMaxEligibleAmount() { return maxEligibleAmount; }
     public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
