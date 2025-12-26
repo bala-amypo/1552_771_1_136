@@ -1,55 +1,30 @@
 package com.example.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "risk_assessment_log")
-@JsonPropertyOrder({ "id", "loanRequestId", "dtiRatio", "creditCheckStatus", "timestamp" })
-public class RiskAssessmentLog {
-
+@Table(name = "risk_assessments")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RiskAssessment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long loanRequestId;
+    @OneToOne
+    @JoinColumn(name = "loan_request_id", nullable = false)
+    private LoanRequest loanRequest;
 
-    @Column(nullable = false)
     private Double dtiRatio;
-
-    @Column(nullable = false)
+    private Double riskScore;
     private String creditCheckStatus;
-
-    @Column(nullable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime assessmentTimestamp;
 
     @PrePersist
     protected void onCreate() {
-        this.timestamp = LocalDateTime.now();
+        assessmentTimestamp = LocalDateTime.now();
     }
-
-    public RiskAssessmentLog() {}
-
-    public RiskAssessmentLog(Long loanRequestId, Double dtiRatio, String creditCheckStatus) {
-        this.loanRequestId = loanRequestId;
-        this.dtiRatio = dtiRatio;
-        this.creditCheckStatus = creditCheckStatus;
-    }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Long getLoanRequestId() { return loanRequestId; }
-    public void setLoanRequestId(Long loanRequestId) { this.loanRequestId = loanRequestId; }
-
-    public Double getDtiRatio() { return dtiRatio; }
-    public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
-
-    public String getCreditCheckStatus() { return creditCheckStatus; }
-    public void setCreditCheckStatus(String creditCheckStatus) { this.creditCheckStatus = creditCheckStatus; }
-
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

@@ -1,14 +1,15 @@
 package com.example.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "loan_request")
-@JsonPropertyOrder({ "id", "user", "requestedAmount", "tenureMonths", "purpose", "status", "appliedAt" })
+@Table(name = "loan_requests")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoanRequest {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,70 +21,13 @@ public class LoanRequest {
     private Double requestedAmount;
     private Integer tenureMonths;
     private String purpose;
-    private String status;
-    private LocalDateTime appliedAt;
+    private String status = "PENDING";
+    private LocalDateTime submittedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.appliedAt = LocalDateTime.now();
+        submittedAt = LocalDateTime.now();
     }
 
-    public LoanRequest() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Double getRequestedAmount() {
-        return requestedAmount;
-    }
-
-    public void setRequestedAmount(Double requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
-
-    public Integer getTenureMonths() {
-        return tenureMonths;
-    }
-
-    public void setTenureMonths(Integer tenureMonths) {
-        this.tenureMonths = tenureMonths;
-    }
-
-    public String getPurpose() {
-        return purpose;
-    }
-
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getAppliedAt() {
-        return appliedAt;
-    }
-
-    public void setAppliedAt(LocalDateTime appliedAt) {
-        this.appliedAt = appliedAt;
-    }
+    public enum Status { PENDING, APPROVED, REJECTED }
 }
-
