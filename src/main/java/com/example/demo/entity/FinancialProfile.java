@@ -1,16 +1,18 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "financial_profile")
 public class FinancialProfile {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     private Double monthlyIncome;
@@ -19,12 +21,12 @@ public class FinancialProfile {
     private Integer creditScore;
     private Double savingsBalance;
 
-    private Instant lastUpdatedAt;
+    private LocalDateTime lastUpdatedAt;
 
     @PrePersist
     @PreUpdate
-    public void touch() {
-        lastUpdatedAt = Instant.now();
+    public void pre() {
+        this.lastUpdatedAt = LocalDateTime.now();
     }
 
     // getters & setters
@@ -49,5 +51,5 @@ public class FinancialProfile {
     public Double getSavingsBalance() { return savingsBalance; }
     public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
 
-    public Instant getLastUpdatedAt() { return lastUpdatedAt; }
+    public LocalDateTime getLastUpdatedAt() { return lastUpdatedAt; }
 }

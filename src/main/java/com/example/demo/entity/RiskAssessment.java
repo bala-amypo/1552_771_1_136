@@ -3,7 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class EligibilityResult {
+public class RiskAssessment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,8 +12,8 @@ public class EligibilityResult {
     @OneToOne
     private LoanRequest loanRequest;
 
-    private Boolean eligible;
-    private Double maxEligibleAmount;
+    private Double riskScore;
+    private Double dtiRatio;
 
     // getters & setters
     public Long getId() { return id; }
@@ -22,9 +22,9 @@ public class EligibilityResult {
     public LoanRequest getLoanRequest() { return loanRequest; }
     public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
 
-    public Boolean getEligible() { return eligible; }
-    public void setEligible(Boolean eligible) { this.eligible = eligible; }
+    public Double getRiskScore() { return riskScore; }
+    public void setRiskScore(Double riskScore) { this.riskScore = riskScore; }
 
-    public Double getMaxEligibleAmount() { return maxEligibleAmount; }
-    public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
+    public Double getDtiRatio() { return dtiRatio; }
+    public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
 }

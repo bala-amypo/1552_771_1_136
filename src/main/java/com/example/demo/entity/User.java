@@ -1,27 +1,25 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
 
 @Entity
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 
-    public enum Role { ADMIN, CUSTOMER }
+    public enum Role { CUSTOMER, ADMIN }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fullName;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
 
     private String role = Role.CUSTOMER.name();
-
-    private Instant createdAt = Instant.now();
 
     // getters & setters
     public Long getId() { return id; }
@@ -38,6 +36,4 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-
-    public Instant getCreatedAt() { return createdAt; }
 }
