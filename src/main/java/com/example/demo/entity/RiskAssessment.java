@@ -1,13 +1,14 @@
-// src/main/java/com/example/demo/entity/RiskAssessment.java
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "risk_assessments")
-public class RiskAssessment {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "risk_assessment_logs")
+public class RiskAssessmentLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -20,26 +21,28 @@ public class RiskAssessment {
     private String creditCheckStatus;
 
     @Column(nullable = false)
-    private Double riskScore;
-
-    @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    public RiskAssessment() {}
+    public RiskAssessmentLog() {}
 
     @PrePersist
-    public void onCreate() { timestamp = LocalDateTime.now(); }
+    public void onCreate() {
+        timestamp = LocalDateTime.now();
+    }
 
+    // Getters and setters
     public Long getId() { return id; }
-    public Long getLoanRequestId() { return loanRequestId; }
-    public Double getDtiRatio() { return dtiRatio; }
-    public String getCreditCheckStatus() { return creditCheckStatus; }
-    public Double getRiskScore() { return riskScore; }
-    public LocalDateTime getTimestamp() { return timestamp; }
     public void setId(Long id) { this.id = id; }
+
+    public Long getLoanRequestId() { return loanRequestId; }
     public void setLoanRequestId(Long loanRequestId) { this.loanRequestId = loanRequestId; }
+
+    public Double getDtiRatio() { return dtiRatio; }
     public void setDtiRatio(Double dtiRatio) { this.dtiRatio = dtiRatio; }
+
+    public String getCreditCheckStatus() { return creditCheckStatus; }
     public void setCreditCheckStatus(String creditCheckStatus) { this.creditCheckStatus = creditCheckStatus; }
-    public void setRiskScore(Double riskScore) { this.riskScore = riskScore; }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }
