@@ -1,3 +1,4 @@
+// src/main/java/com/example/demo/controller/FinancialProfileController.java
 package com.example.demo.controller;
 
 import com.example.demo.entity.FinancialProfile;
@@ -8,22 +9,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/financial-profiles")
 public class FinancialProfileController {
+    private final FinancialProfileService service;
 
-    private final FinancialProfileService financialProfileService;
-
-    public FinancialProfileController(FinancialProfileService financialProfileService) {
-        this.financialProfileService = financialProfileService;
-    }
+    public FinancialProfileController(FinancialProfileService service) { this.service = service; }
 
     @PostMapping("/")
     public ResponseEntity<FinancialProfile> createOrUpdate(@RequestBody FinancialProfile profile) {
-        FinancialProfile result = financialProfileService.createOrUpdate(profile);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(service.createOrUpdate(profile));
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<FinancialProfile> getByUser(@PathVariable Long userId) {
-        FinancialProfile profile = financialProfileService.getByUserId(userId);
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(service.getByUserId(userId));
     }
 }

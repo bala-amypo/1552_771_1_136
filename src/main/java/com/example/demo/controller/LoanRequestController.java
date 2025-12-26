@@ -1,3 +1,4 @@
+// src/main/java/com/example/demo/controller/LoanRequestController.java
 package com.example.demo.controller;
 
 import com.example.demo.entity.LoanRequest;
@@ -10,34 +11,26 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/loan-requests")
 public class LoanRequestController {
-
-    private final LoanRequestService loanRequestService;
-
-    public LoanRequestController(LoanRequestService loanRequestService) {
-        this.loanRequestService = loanRequestService;
-    }
+    private final LoanRequestService service;
+    public LoanRequestController(LoanRequestService service) { this.service = service; }
 
     @PostMapping("/")
-    public ResponseEntity<LoanRequest> submitRequest(@RequestBody LoanRequest request) {
-        LoanRequest result = loanRequestService.submitRequest(request);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<LoanRequest> submit(@RequestBody LoanRequest lr) {
+        return ResponseEntity.ok(service.submitRequest(lr));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LoanRequest>> getRequestsByUser(@PathVariable Long userId) {
-        List<LoanRequest> requests = loanRequestService.getRequestsByUser(userId);
-        return ResponseEntity.ok(requests);
+    public ResponseEntity<List<LoanRequest>> getByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(service.getRequestsByUser(userId));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LoanRequest> getById(@PathVariable Long id) {
-        LoanRequest request = loanRequestService.getById(id);
-        return ResponseEntity.ok(request);
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @GetMapping("/")
     public ResponseEntity<List<LoanRequest>> getAll() {
-        List<LoanRequest> allRequests = loanRequestService.getAllRequests();
-        return ResponseEntity.ok(allRequests);
+        return ResponseEntity.ok(service.getAllRequests());
     }
 }

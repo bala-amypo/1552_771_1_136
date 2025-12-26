@@ -1,63 +1,56 @@
+// src/main/java/com/example/demo/controller/AuthController.java
 package com.example.demo.controller;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.entity.User;
-import com.example.demo.exception.BadRequestException;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
-import com.example.demo.service.UserService;
-import org.springframework.http.HttpStatus;
+import com.example.demo.service.impl.UserServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public AuthController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
+    // Constructor signature matches test usage
+    public AuthController(UserServiceImpl userService, JwtUtil jwtUtil, UserRepository userRepository) {
+        this.userService = userService; this.jwtUtil = jwtUtil; this.userRepository = userRepository;
     }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody User user) {
-        User createdUser = userService.register(user);
-        AuthResponse response = new AuthResponse();
-        response.setUserId(createdUser.getId());
-        response.setEmail(createdUser.getEmail());
-        response.setFullName(createdUser.getFullName());
-        response.setRole(createdUser.getRole());
-        response.setToken(""); // no token generated on register
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        User created = userService.register(user);
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("email", created.getEmail());
+        claims.put("role", created.getRole());
+        claims.put("userId", created.getId());
+        String token = jwtUtil.generateToken(claims, created.getEmail());
+        return ResponseEntity.ok(new AuthResponse(token, created.getId(), created.getEmail(), created.getRole(), created.getFullName()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        User user = userService.findByEmail(request.getEmail());
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Invalid credentials");
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
+        Optional<User> uOpt = userRepository.findByEmail(req.getEmail());
+        if (uOpt.isEmpty() || !encoder.matches(req.getPassword(), uOpt.get().getPassword())) {
+            return ResponseEntity.status(401).build();
         }
-
-        String token = jwtUtil.generateToken(
-                java.util.Map.of(
-                        "userId", user.getId(),
-                        "email", user.getEmail(),
-                        "role", user.getRole()
-                ), user.getEmail()
-        );
-
-        AuthResponse response = new AuthResponse();
-        response.setUserId(user.getId());
-        response.setEmail(user.getEmail());
-        response.setFullName(user.getFullName());
-        response.setRole(user.getRole());
-        response.setToken(token);
-
-        return ResponseEntity.ok(response);
+        User u = uOpt.get();
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("email", u.getEmail());
+        claims.put("role", u.getRole());
+        claims.put("userId", u.getId());
+        String token = jwtUtil.generateToken(claims, u.getEmail());
+        return ResponseEntity.ok(new AuthResponse(token, u.getId(), u.getEmail(), u.getRole(), u.getFullName()));
     }
 }
