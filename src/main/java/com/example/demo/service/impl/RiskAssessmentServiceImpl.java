@@ -24,7 +24,7 @@ public class RiskAssessmentServiceImpl implements RiskAssessmentService {
     }
 
     @Override
-    public RiskAssessment assessRisk(Long loanRequestId) {
+    public RiskAssessmentLog assessRisk(Long loanRequestId) {
 
         if (riskRepository.findByLoanRequestId(loanRequestId).isPresent()) {
             throw new BadRequestException("Financial profile already exists");
