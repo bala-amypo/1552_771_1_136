@@ -1,46 +1,35 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.*;
 import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.FinancialProfileRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.FinancialProfileService;
-import org.springframework.stereotype.Service;
+import com.example.demo.repository.*;
 
-@Service   // ✅ ADD THIS
-public class FinancialProfileServiceImpl implements FinancialProfileService {
+public class FinancialProfileServiceImpl {
 
-    private final FinancialProfileRepository profileRepository;
-    private final UserRepository userRepository;
+    private final FinancialProfileRepository repo;
+    private final UserRepository userRepo;
 
-    public FinancialProfileServiceImpl(
-            FinancialProfileRepository profileRepository,
-            UserRepository userRepository) {
-        this.profileRepository = profileRepository;
-        this.userRepository = userRepository;
+    public FinancialProfileServiceImpl(FinancialProfileRepository r, UserRepository u) {
+        this.repo = r;
+        this.userRepo = u;
     }
 
-    @Override
-    public FinancialProfile createOrUpdate(FinancialProfile profile) {
-
-        if (profile.getCreditScore() < 300 || profile.getCreditScore() > 900) {
+    public FinancialProfile createOrUpdate(FinancialProfile fp) {
+        if (fp.getCreditScore() < 300 || fp.getCreditScore() > 900)
             throw new BadRequestException("Invalid credit score");
-        }
 
-        Long userId = profile.getUser().getId();
-        userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Long uid = fp.getUser().getId();
+        userRepo.findById(uid).orElseThrow();
 
-        profileRepository.findByUserId(userId)
-                .ifPresent(existing -> profile.setId(existing.getId()));
-
-        return profileRepository.save(profile);
+        return repo.findByUserId(uid)
+                .map(existing -> {
+                    fp.setId(existing.getId());
+                    return repo.save(fp);
+                })
+                .orElseGet(() -> repo.save(fp));
     }
 
-    @Override
-    public FinancialProfile getByUserId(Long userId) {
-        return profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public FinancialProfile getByUserId(Long id) {
+        return repo.findByUserId(id).orElse(null);
     }
 }
