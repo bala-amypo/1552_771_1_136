@@ -21,17 +21,35 @@ public class FinancialProfile {
 
     private Instant lastUpdatedAt;
 
-    // This method is triggered by Hibernate in production, 
-    // but must be called manually in Mockito unit tests.
     @PrePersist
     @PreUpdate
     public void touch() {
         this.lastUpdatedAt = Instant.now();
     }
 
-    // Getters and Setters...
+    // --- Getters and Setters ---
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public Double getMonthlyIncome() { return monthlyIncome; }
+    public void setMonthlyIncome(Double monthlyIncome) { this.monthlyIncome = monthlyIncome; }
+
+    public Double getMonthlyExpenses() { return monthlyExpenses; }
+    public void setMonthlyExpenses(Double monthlyExpenses) { this.monthlyExpenses = monthlyExpenses; }
+
+    public Double getExistingLoanEmi() { return existingLoanEmi; }
+    public void setExistingLoanEmi(Double existingLoanEmi) { this.existingLoanEmi = existingLoanEmi; }
+
+    public Integer getCreditScore() { return creditScore; }
+    public void setCreditScore(Integer creditScore) { this.creditScore = creditScore; }
+
+    public Double getSavingsBalance() { return savingsBalance; }
+    public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
+
     public Instant getLastUpdatedAt() { return lastUpdatedAt; }
-    // ... (rest of the getters/setters)
+    public void setLastUpdatedAt(Instant lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; }
 }
