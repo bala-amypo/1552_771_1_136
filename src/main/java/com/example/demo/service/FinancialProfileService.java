@@ -1,10 +1,10 @@
-package com.example.demo.service;
+public FinancialProfile createOrUpdate(FinancialProfile profile) {
+    // RECTIFICATION: Add validation for the credit score range
+    if (profile.getCreditScore() != null && 
+       (profile.getCreditScore() < 300 || profile.getCreditScore() > 850)) {
+        throw new BadRequestException("Invalid credit score: " + profile.getCreditScore());
+    }
 
-import com.example.demo.entity.FinancialProfile;
-
-public interface FinancialProfileService {
-
-    FinancialProfile createOrUpdate(FinancialProfile profile);
-
-    FinancialProfile getByUserId(Long userId);
+    // Standard logic to save/update
+    return financialProfileRepository.save(profile);
 }
