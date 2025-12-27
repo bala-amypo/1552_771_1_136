@@ -1,28 +1,21 @@
-// src/main/java/com/example/demo/config/SecurityConfig.java
 package com.example.demo.config;
 
-import com.example.demo.security.JwtFilter;
-import com.example.demo.security.JwtUtil;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.List;
 
 @Configuration
-public class SecurityConfig {
+public class OpenApiConfig {
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    // JwtFilter wired by application usage; no WebSecurity config needed for tests
-    @Bean
-    public JwtFilter jwtFilter(JwtUtil jwtUtil) {
-        return new JwtFilter(jwtUtil);
-    }
-
-    @Bean
-    public JwtUtil jwtUtil() {
-        return new JwtUtil("ChangeThisSecretForProductionButKeepItLongEnough", 3600000);
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                // Trainer sonna madhiri server URL mattum
+                .servers(List.of(
+                        new Server().url("https://9274.408procr.amypo.ai/")
+                ));
     }
 }
