@@ -1,16 +1,14 @@
-package com.example.demo.controller;
+// package com.example.demo.controller;
 
 import com.example.demo.entity.LoanRequest;
 import com.example.demo.service.LoanRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/loan-requests")
-@SecurityRequirement(name = "bearerAuth")
 public class LoanRequestController {
 
     private final LoanRequestService service;
