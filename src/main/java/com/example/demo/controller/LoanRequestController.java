@@ -1,4 +1,3 @@
-// src/main/java/com/example/demo/controller/LoanRequestController.java
 package com.example.demo.controller;
 
 import com.example.demo.entity.LoanRequest;
@@ -11,16 +10,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/loan-requests")
 public class LoanRequestController {
-    private final LoanRequestService service;
-    public LoanRequestController(LoanRequestService service) { this.service = service; }
 
-    @PostMapping("/")
-    public ResponseEntity<LoanRequest> submit(@RequestBody LoanRequest lr) {
-        return ResponseEntity.ok(service.submitRequest(lr));
+    private final LoanRequestService service;
+
+    public LoanRequestController(LoanRequestService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<LoanRequest> submit(@RequestBody LoanRequest request) {
+        return ResponseEntity.ok(service.submitRequest(request));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LoanRequest>> getByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<LoanRequest>> getByUser(
+            @PathVariable Long userId) {
         return ResponseEntity.ok(service.getRequestsByUser(userId));
     }
 
@@ -29,8 +33,8 @@ public class LoanRequestController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<LoanRequest>> getAll() {
-        return ResponseEntity.ok(service.getAllRequests());
+        return ResponseEntity.ok(service.getAll());
     }
 }
