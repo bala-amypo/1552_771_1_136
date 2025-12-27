@@ -8,27 +8,23 @@ import com.example.demo.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
-@Service   // <-- makes this a Spring bean
+@Service   // ✅ ADD THIS
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.encoder = encoder;
     }
 
     @Override
     public User register(User user) {
-        Optional<User> existing = userRepository.findByEmail(user.getEmail());
-        if (existing.isPresent()) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new BadRequestException("Email already in use");
         }
         user.setPassword(encoder.encode(user.getPassword()));
-        if (user.getRole() == null) user.setRole(User.Role.CUSTOMER.name());
+        user.setRole(User.Role.CUSTOMER.name());
         return userRepository.save(user);
     }
 

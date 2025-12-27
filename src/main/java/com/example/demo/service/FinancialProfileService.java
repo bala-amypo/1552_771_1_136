@@ -1,9 +1,9 @@
-// src/main/java/com/example/demo/service/FinancialProfileService.java
+// src/main/java/com/example/demo/service/LoanEligibilityService.java
 package com.example.demo.service;
 
-import com.example.demo.entity.FinancialProfile;
+import com.example.demo.entity.EligibilityResult;
 
-public interface FinancialProfileService {
-    FinancialProfile createOrUpdate(FinancialProfile profile);
-    FinancialProfile getByUserId(Long userId);
+public interface LoanEligibilityService {
+    EligibilityResult evaluateEligibility(Long loanRequestId);
+    EligibilityResult getByLoanRequestId(Long loanRequestId);
 }
