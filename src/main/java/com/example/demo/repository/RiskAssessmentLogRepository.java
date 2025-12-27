@@ -1,12 +1,14 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.RiskAssessmentLog;
+import com.example.demo.entity.RiskAssessment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface RiskAssessmentLogRepository extends JpaRepository<RiskAssessmentLog, Long> {
-    List<RiskAssessmentLog> findByLoanRequestId(Long loanRequestId);
-    Optional<RiskAssessmentLog> findById(Long id);
+@Repository
+public interface RiskAssessmentRepository
+        extends JpaRepository<RiskAssessment, Long> {
+
+    Optional<RiskAssessment> findByLoanRequestId(Long loanRequestId);
 }
