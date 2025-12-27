@@ -1,104 +1,110 @@
 package com.example.demo.dto;
 
-import java.time.LocalDateTime;
-
 public class LoanDtos {
 
-    // Inner class for LoanRequest DTO
+    // 🔹 Inner DTO for Loan Request
     public static class LoanRequestDto {
-        private Long id;
+
         private Long userId;
         private Double requestedAmount;
         private Integer tenureMonths;
         private String purpose;
-        private String status;
-        private LocalDateTime appliedAt;
 
-        public LoanRequestDto() {}
-
-        public LoanRequestDto(Long id, Long userId, Double requestedAmount,
-                              Integer tenureMonths, String purpose,
-                              String status, LocalDateTime appliedAt) {
-            this.id = id;
-            this.userId = userId;
-            this.requestedAmount = requestedAmount;
-            this.tenureMonths = tenureMonths;
-            this.purpose = purpose;
-            this.status = status;
-            this.appliedAt = appliedAt;
+        public LoanRequestDto() {
         }
 
-        public Long getId() { return id; }
-        public void setId(Long id) { this.id = id; }
+        public Long getUserId() {
+            return userId;
+        }
 
-        public Long getUserId() { return userId; }
-        public void setUserId(Long userId) { this.userId = userId; }
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
 
-        public Double getRequestedAmount() { return requestedAmount; }
-        public void setRequestedAmount(Double requestedAmount) { this.requestedAmount = requestedAmount; }
+        public Double getRequestedAmount() {
+            return requestedAmount;
+        }
 
-        public Integer getTenureMonths() { return tenureMonths; }
-        public void setTenureMonths(Integer tenureMonths) { this.tenureMonths = tenureMonths; }
+        public void setRequestedAmount(Double requestedAmount) {
+            this.requestedAmount = requestedAmount;
+        }
 
-        public String getPurpose() { return purpose; }
-        public void setPurpose(String purpose) { this.purpose = purpose; }
+        public Integer getTenureMonths() {
+            return tenureMonths;
+        }
 
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
+        public void setTenureMonths(Integer tenureMonths) {
+            this.tenureMonths = tenureMonths;
+        }
 
-        public LocalDateTime getAppliedAt() { return appliedAt; }
-        public void setAppliedAt(LocalDateTime appliedAt) { this.appliedAt = appliedAt; }
+        public String getPurpose() {
+            return purpose;
+        }
+
+        public void setPurpose(String purpose) {
+            this.purpose = purpose;
+        }
     }
 
-    // Inner class for FinancialProfile DTO
+    // 🔹 Inner DTO for Financial Profile
     public static class FinancialProfileDto {
-        private Long id;
+
         private Long userId;
         private Double monthlyIncome;
         private Double monthlyExpenses;
         private Double existingLoanEmi;
         private Integer creditScore;
         private Double savingsBalance;
-        private LocalDateTime lastUpdatedAt;
 
-        public FinancialProfileDto() {}
-
-        public FinancialProfileDto(Long id, Long userId, Double monthlyIncome,
-                                   Double monthlyExpenses, Double existingLoanEmi,
-                                   Integer creditScore, Double savingsBalance,
-                                   LocalDateTime lastUpdatedAt) {
-            this.id = id;
-            this.userId = userId;
-            this.monthlyIncome = monthlyIncome;
-            this.monthlyExpenses = monthlyExpenses;
-            this.existingLoanEmi = existingLoanEmi;
-            this.creditScore = creditScore;
-            this.savingsBalance = savingsBalance;
-            this.lastUpdatedAt = lastUpdatedAt;
+        public FinancialProfileDto() {
         }
 
-        public Long getId() { return id; }
-        public void setId(Long id) { this.id = id; }
+        public Long getUserId() {
+            return userId;
+        }
 
-        public Long getUserId() { return userId; }
-        public void setUserId(Long userId) { this.userId = userId; }
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
 
-        public Double getMonthlyIncome() { return monthlyIncome; }
-        public void setMonthlyIncome(Double monthlyIncome) { this.monthlyIncome = monthlyIncome; }
+        public Double getMonthlyIncome() {
+            return monthlyIncome;
+        }
 
-        public Double getMonthlyExpenses() { return monthlyExpenses; }
-        public void setMonthlyExpenses(Double monthlyExpenses) { this.monthlyExpenses = monthlyExpenses; }
+        public void setMonthlyIncome(Double monthlyIncome) {
+            this.monthlyIncome = monthlyIncome;
+        }
 
-        public Double getExistingLoanEmi() { return existingLoanEmi; }
-        public void setExistingLoanEmi(Double existingLoanEmi) { this.existingLoanEmi = existingLoanEmi; }
+        public Double getMonthlyExpenses() {
+            return monthlyExpenses;
+        }
 
-        public Integer getCreditScore() { return creditScore; }
-        public void setCreditScore(Integer creditScore) { this.creditScore = creditScore; }
+        public void setMonthlyExpenses(Double monthlyExpenses) {
+            this.monthlyExpenses = monthlyExpenses;
+        }
 
-        public Double getSavingsBalance() { return savingsBalance; }
-        public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
+        public Double getExistingLoanEmi() {
+            return existingLoanEmi;
+        }
 
-        public LocalDateTime getLastUpdatedAt() { return lastUpdatedAt; }
-        public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; }
+        public void setExistingLoanEmi(Double existingLoanEmi) {
+            this.existingLoanEmi = existingLoanEmi;
+        }
+
+        public Integer getCreditScore() {
+            return creditScore;
+        }
+
+        public void setCreditScore(Integer creditScore) {
+            this.creditScore = creditScore;
+        }
+
+        public Double getSavingsBalance() {
+            return savingsBalance;
+        }
+
+        public void setSavingsBalance(Double savingsBalance) {
+            this.savingsBalance = savingsBalance;
+        }
     }
 }

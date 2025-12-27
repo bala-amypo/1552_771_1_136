@@ -1,55 +1,41 @@
-// src/main/java/com/example/demo/entity/EligibilityResult.java
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
-@Table(name = "eligibility_results")
 public class EligibilityResult {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "loan_request_id", nullable = false, unique = true)
     private LoanRequest loanRequest;
 
-    @Column(nullable = false)
     private Boolean isEligible;
-
-    @Column(nullable = false)
     private Double maxEligibleAmount;
-
-    @Column(nullable = false)
     private Double estimatedEmi;
-
-    @Column(nullable = false)
     private String riskLevel;
-
-    @Column
     private String rejectionReason;
+    private Instant calculatedAt = Instant.now();
 
-    @Column(nullable = false)
-    private LocalDateTime calculatedAt;
-
-    public EligibilityResult() {}
-    @PrePersist
-    public void onCreate() { calculatedAt = LocalDateTime.now(); }
-
+    // getters & setters
     public Long getId() { return id; }
-    public LoanRequest getLoanRequest() { return loanRequest; }
-    public Boolean getIsEligible() { return isEligible; }
-    public Double getMaxEligibleAmount() { return maxEligibleAmount; }
-    public Double getEstimatedEmi() { return estimatedEmi; }
-    public String getRiskLevel() { return riskLevel; }
-    public String getRejectionReason() { return rejectionReason; }
-    public LocalDateTime getCalculatedAt() { return calculatedAt; }
     public void setId(Long id) { this.id = id; }
+
+    public LoanRequest getLoanRequest() { return loanRequest; }
     public void setLoanRequest(LoanRequest loanRequest) { this.loanRequest = loanRequest; }
-    public void setIsEligible(Boolean isEligible) { this.isEligible = isEligible; }
+
+    public Boolean getIsEligible() { return isEligible; }
+    public void setIsEligible(Boolean eligible) { isEligible = eligible; }
+
+    public Double getMaxEligibleAmount() { return maxEligibleAmount; }
     public void setMaxEligibleAmount(Double maxEligibleAmount) { this.maxEligibleAmount = maxEligibleAmount; }
+
+    public Double getEstimatedEmi() { return estimatedEmi; }
     public void setEstimatedEmi(Double estimatedEmi) { this.estimatedEmi = estimatedEmi; }
+
+    public String getRiskLevel() { return riskLevel; }
     public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
-    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
-    public void setCalculatedAt(LocalDateTime calculatedAt) { this.calculatedAt = calculatedAt; }
 }
