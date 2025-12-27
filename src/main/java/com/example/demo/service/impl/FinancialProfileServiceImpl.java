@@ -24,6 +24,13 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
     @Override
     public FinancialProfile createOrUpdate(FinancialProfile profile) {
 
+        // ✅ FIX FOR: t16_create_financial_profile_invalid_credit_score
+        if (profile.getCreditScore() == null
+                || profile.getCreditScore() < 300
+                || profile.getCreditScore() > 900) {
+            throw new IllegalArgumentException("Invalid credit score");
+        }
+
         User user = userRepository.findById(profile.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -37,14 +44,14 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
             existing.setCreditScore(profile.getCreditScore());
             existing.setSavingsBalance(profile.getSavingsBalance());
 
-            // ⭐ FIX FOR TEST FAILURE
+            // ✅ timestamp fix (Mockito-safe)
             existing.touch();
             return financialProfileRepository.save(existing);
         }
 
         profile.setUser(user);
 
-        // ⭐ FIX FOR TEST FAILURE
+        // ✅ timestamp fix (Mockito-safe)
         profile.touch();
         return financialProfileRepository.save(profile);
     }
