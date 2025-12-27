@@ -1,31 +1,47 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.FinancialProfile;
-import com.example.demo.repository.FinancialProfileRepository;
-import com.example.demo.service.FinancialProfileService;
 import com.example.demo.exception.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FinancialProfileRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.FinancialProfileService;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
-@Service 
+@Service   // ✅ ADD THIS
 public class FinancialProfileServiceImpl implements FinancialProfileService {
 
-    @Autowired
-    private FinancialProfileRepository financialProfileRepository;
+    private final FinancialProfileRepository profileRepository;
+    private final UserRepository userRepository;
 
-    @Override
-    public FinancialProfile createOrUpdate(FinancialProfile profile) {
-        // Validation for Test 16
-        if (profile.getCreditScore() != null && 
-           (profile.getCreditScore() < 300 || profile.getCreditScore() > 850)) {
-            throw new BadRequestException("Invalid credit score: " + profile.getCreditScore());
-        }
-        return financialProfileRepository.save(profile);
+    public FinancialProfileServiceImpl(
+            FinancialProfileRepository profileRepository,
+            UserRepository userRepository) {
+        this.profileRepository = profileRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Optional<FinancialProfile> getByUserId(Long userId) {
-        return financialProfileRepository.findByUserId(userId);
+    public FinancialProfile createOrUpdate(FinancialProfile profile) {
+
+        if (profile.getCreditScore() < 300 || profile.getCreditScore() > 900) {
+            throw new BadRequestException("Invalid credit score");
+        }
+
+        Long userId = profile.getUser().getId();
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        profileRepository.findByUserId(userId)
+                .ifPresent(existing -> profile.setId(existing.getId()));
+
+        profile.touch(); // Ensure timestamp is set
+        return profileRepository.save(profile);
+    }
+
+    @Override
+    public FinancialProfile getByUserId(Long userId) {
+        return profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

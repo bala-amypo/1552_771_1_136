@@ -7,7 +7,7 @@ import java.time.Instant;
 public class FinancialProfile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     @OneToOne
@@ -18,15 +18,16 @@ public class FinancialProfile {
     private Double existingLoanEmi;
     private Integer creditScore;
     private Double savingsBalance;
+
     private Instant lastUpdatedAt;
 
     @PrePersist
     @PreUpdate
     public void touch() {
-        this.lastUpdatedAt = Instant.now();
+        lastUpdatedAt = Instant.now();
     }
 
-    // --- Getters and Setters ---
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -49,5 +50,8 @@ public class FinancialProfile {
     public void setSavingsBalance(Double savingsBalance) { this.savingsBalance = savingsBalance; }
 
     public Instant getLastUpdatedAt() { return lastUpdatedAt; }
-    public void setLastUpdatedAt(Instant lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; }
+
+    public void setLastUpdatedAt(Instant lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
 }
