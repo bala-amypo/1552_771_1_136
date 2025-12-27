@@ -18,7 +18,6 @@ public class FinancialProfile {
     private Double existingLoanEmi;
     private Integer creditScore;
     private Double savingsBalance;
-
     private Instant lastUpdatedAt;
 
     @PrePersist
@@ -28,7 +27,6 @@ public class FinancialProfile {
     }
 
     // --- Getters and Setters ---
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
