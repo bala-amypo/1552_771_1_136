@@ -1,3 +1,4 @@
+
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
@@ -53,3 +54,4 @@ public class EligibilityServiceImpl implements EligibilityService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }
+
