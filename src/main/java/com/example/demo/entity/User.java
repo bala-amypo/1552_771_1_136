@@ -41,3 +41,12 @@ public class User {
 
     public Instant getCreatedAt() { return createdAt; }
 }
+
+
+package com.example.demo.exception;
+
+public class BadRequestException extends RuntimeException {
+    public BadRequestException(String msg) {
+        super(msg);
+    }
+}
