@@ -4,9 +4,10 @@ import com.example.demo.entity.FinancialProfile;
 import com.example.demo.service.FinancialProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @RequestMapping("/api/financial-profiles")
+@SecurityRequirement(name="bearerAuth")
 public class FinancialProfileController {
 
     private final FinancialProfileService service;

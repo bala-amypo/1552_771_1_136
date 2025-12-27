@@ -5,9 +5,10 @@ import com.example.demo.entity.EligibilityResult;
 import com.example.demo.service.EligibilityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @RequestMapping("/api/eligibility")
+@SecurityRequirement(name="bearerAuth")
 public class EligibilityController {
 
     private final EligibilityService service;
