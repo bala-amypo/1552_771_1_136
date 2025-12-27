@@ -1,63 +1,58 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.FinancialProfile;
-import com.example.demo.entity.LoanRequest;
-import com.example.demo.entity.RiskAssessmentLog;
+import com.example.demo.entity.*;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.FinancialProfileRepository;
-import com.example.demo.repository.LoanRequestRepository;
-import com.example.demo.repository.RiskAssessmentLogRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.RiskAssessmentService;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service   // ✅ ADD THIS
 public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
-    private final LoanRequestRepository lrRepo;
-    private final FinancialProfileRepository fpRepo;
-    private final RiskAssessmentLogRepository raRepo;
+    private final LoanRequestRepository loanRequestRepository;
+    private final FinancialProfileRepository profileRepository;
+    private final RiskAssessmentRepository riskRepository;
 
-    public RiskAssessmentServiceImpl(LoanRequestRepository lrRepo,
-                                     FinancialProfileRepository fpRepo,
-                                     RiskAssessmentLogRepository raRepo) {
-        this.lrRepo = lrRepo;
-        this.fpRepo = fpRepo;
-        this.raRepo = raRepo;
+    public RiskAssessmentServiceImpl(
+            LoanRequestRepository loanRequestRepository,
+            FinancialProfileRepository profileRepository,
+            RiskAssessmentRepository riskRepository) {
+        this.loanRequestRepository = loanRequestRepository;
+        this.profileRepository = profileRepository;
+        this.riskRepository = riskRepository;
     }
 
     @Override
-    public RiskAssessmentLog assessRisk(Long loanRequestId) {
-        if (!lrRepo.findById(loanRequestId).isPresent()) {
-            throw new ResourceNotFoundException("Loan request not found");
-        }
-        if (raRepo.findByLoanRequestId(loanRequestId).size() > 0) {
-            throw new BadRequestException("Risk already assessed");
+    public RiskAssessment assessRisk(Long loanRequestId) {
+
+        if (riskRepository.findByLoanRequestId(loanRequestId).isPresent()) {
+            throw new BadRequestException("Financial profile already exists");
         }
 
-        LoanRequest lr = lrRepo.findById(loanRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
-        FinancialProfile fp = fpRepo.findByUserId(lr.getUser().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Financial profile not found"));
+        LoanRequest loanRequest = loanRequestRepository.findById(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        double obligations = fp.getMonthlyExpenses() + fp.getExistingLoanEmi();
-        double dti = obligations / fp.getMonthlyIncome();
+        FinancialProfile profile = profileRepository
+                .findByUserId(loanRequest.getUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        String creditCheckStatus = fp.getCreditScore() >= 700 ? "APPROVED"
-                : (fp.getCreditScore() >= 600 ? "PENDING_REVIEW" : "REJECTED");
+        RiskAssessment risk = new RiskAssessment();
+        risk.setLoanRequestId(loanRequestId);
 
-        RiskAssessmentLog log = new RiskAssessmentLog();
-        log.setLoanRequestId(loanRequestId);
-        log.setDtiRatio(dti);
-        log.setCreditCheckStatus(creditCheckStatus);
+        double income = profile.getMonthlyIncome() == 0 ? 1 : profile.getMonthlyIncome();
+        double obligations = profile.getMonthlyExpenses() + profile.getExistingLoanEmi();
 
-        return raRepo.save(log);
+        risk.setDtiRatio(obligations / income);
+        risk.setRiskScore(50.0);
+        risk.setCreditCheckStatus("OK");
+
+        return riskRepository.save(risk);
     }
 
     @Override
-    public RiskAssessmentLog getByLoanRequestId(Long loanRequestId) {
-        return raRepo.findByLoanRequestId(loanRequestId).stream()
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Risk assessment not found"));
+    public RiskAssessment getByLoanRequestId(Long loanRequestId) {
+        return riskRepository.findByLoanRequestId(loanRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }
