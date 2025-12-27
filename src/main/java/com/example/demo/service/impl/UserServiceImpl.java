@@ -42,7 +42,7 @@
 
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
