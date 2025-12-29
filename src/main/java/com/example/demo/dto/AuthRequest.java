@@ -6,11 +6,9 @@ public class AuthRequest {
     private String email;
     private String password;
 
-    // Default constructor (IMPORTANT for Jackson)
     public AuthRequest() {
     }
 
-    // Constructor used in tests
     public AuthRequest(String email, String password) {
         this.email = email;
         this.password = password;

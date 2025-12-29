@@ -1,9 +1,8 @@
-// 
+
 package com.example.demo.dto;
 
 public class LoanDtos {
 
-    // 🔹 Inner DTO for Loan Request
     public static class LoanRequestDto {
 
         private Long userId;
@@ -47,7 +46,6 @@ public class LoanDtos {
         }
     }
 
-    // 🔹 Inner DTO for Financial Profile
     public static class FinancialProfileDto {
 
         private Long userId;

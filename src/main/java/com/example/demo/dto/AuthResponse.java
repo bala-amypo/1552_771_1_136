@@ -6,18 +6,16 @@ public class AuthResponse {
     private String email;
     private String role;
 
-    // Default constructor
+    
     public AuthResponse() {
     }
 
-    // Constructor used in controller
     public AuthResponse(String token, String email, String role) {
         this.token = token;
         this.email = email;
         this.role = role;
     }
 
-    // getters & setters
     public String getToken() {
         return token;
     }
