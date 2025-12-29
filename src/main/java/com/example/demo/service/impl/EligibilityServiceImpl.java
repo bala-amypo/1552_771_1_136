@@ -8,7 +8,7 @@ import com.example.demo.repository.*;
 import com.example.demo.service.EligibilityService;
 import org.springframework.stereotype.Service;
 
-@Service   // ✅ ADD THIS
+@Service   
 public class EligibilityServiceImpl implements EligibilityService {
 
     private final LoanRequestRepository loanRequestRepository;

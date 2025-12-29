@@ -8,7 +8,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FinancialProfileService;
 import org.springframework.stereotype.Service;
 
-@Service   // ✅ ADD THIS
+@Service   
 public class FinancialProfileServiceImpl implements FinancialProfileService {
 
     private final FinancialProfileRepository profileRepository;
@@ -35,7 +35,7 @@ public class FinancialProfileServiceImpl implements FinancialProfileService {
         profileRepository.findByUserId(userId)
                 .ifPresent(existing -> profile.setId(existing.getId()));
 
-        profile.touch(); // Ensure timestamp is set
+        profile.touch(); 
         return profileRepository.save(profile);
     }
 

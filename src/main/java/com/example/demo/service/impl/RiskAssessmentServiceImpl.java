@@ -7,7 +7,7 @@ import com.example.demo.repository.*;
 import com.example.demo.service.RiskAssessmentService;
 import org.springframework.stereotype.Service;
 
-@Service   // ✅ ADD THIS
+@Service   
 public class RiskAssessmentServiceImpl implements RiskAssessmentService {
 
     private final LoanRequestRepository loanRequestRepository;

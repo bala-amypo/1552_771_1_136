@@ -8,19 +8,19 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
-@Component   // ✅ THIS IS THE KEY FIX
+@Component   
 public class JwtUtil {
 
     private final Key key;
     private final long validityInMs;
 
-    // ⚠️ Constructor REQUIRED by test cases
+   
     public JwtUtil(String secret, long validityInMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.validityInMs = validityInMs;
     }
 
-    // ✅ DEFAULT constructor for Spring
+   
     public JwtUtil() {
         this("ChangeThisSecretForProductionButKeepItLongEnough", 3600000);
     }

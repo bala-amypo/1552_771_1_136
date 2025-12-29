@@ -8,7 +8,7 @@ import com.example.demo.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service   // ✅ ADD THIS
+@Service   
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

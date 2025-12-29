@@ -10,7 +10,7 @@ import com.example.demo.service.LoanRequestService;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-@Service   // ✅ ADD THIS
+@Service   
 public class LoanRequestServiceImpl implements LoanRequestService {
 
     private final LoanRequestRepository loanRequestRepository;
